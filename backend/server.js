@@ -33,6 +33,7 @@ app.use(cors({
         'http://localhost:19006', // Expo web legacy
         'https://jhomfoods-test-1.vercel.app',
         'https://jhomfoods-test-1-9bso.vercel.app',
+        'https://tbmtc.onrender.com',
         process.env.CORS_ORIGIN
     ].filter(Boolean),
     credentials: true

@@ -4,7 +4,7 @@ import { Platform } from 'react-native';
 // Automatically detects platform and uses the correct URL
 // API Configuration
 // Production URL (Render)
-export const API_BASE_URL = 'http://172.20.10.3:5000';
+export const API_BASE_URL = 'https://tbmtc.onrender.com';
 
 /* 
 // Local Development Configuration (Uncomment for local dev)
