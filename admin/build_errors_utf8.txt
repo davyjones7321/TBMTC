@@ -1,0 +1,7 @@
+﻿src/App.tsx(25,8): error TS2307: Cannot find module './index.css' or its corresponding type declarations.
+src/components/charts/CategoryDonutChart.tsx(44,29): error TS2322: Type 'CategoryData[]' is not assignable to type 'ChartDataInput[]'.
+  Type 'CategoryData' is not assignable to type 'ChartDataInput'.
+    Index signature for type 'string' is missing in type 'CategoryData'.
+src/lib/constants.ts(1,41): error TS2339: Property 'env' does not exist on type 'ImportMeta'.
+src/main.tsx(3,8): error TS2307: Cannot find module './index.css' or its corresponding type declarations.
+src/pages/categories/CategoryList.tsx(7,41): error TS6133: 'CardTitle' is declared but its value is never read.

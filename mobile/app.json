@@ -1,0 +1,48 @@
+{
+  "expo": {
+    "name": "JHOMFOODS",
+    "slug": "jhomfoods-mobile",
+    "version": "1.0.0",
+    "updates": {
+      "enabled": false
+    },
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "scheme": "jhomfoods",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#dc2626"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.jhomfoods.mobile"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#dc2626"
+      },
+      "edgeToEdgeEnabled": true,
+      "package": "com.jhomfoods.mobile"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow JHOMFOODS to use your location for delivery address.",
+          "locationAlwaysPermission": "Allow JHOMFOODS to use your location for delivery address.",
+          "locationWhenInUsePermission": "Allow JHOMFOODS to use your location for delivery address."
+        }
+      ]
+    ]
+  }
+}

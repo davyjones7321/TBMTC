@@ -1,0 +1,147 @@
+/* Import Google Fonts - MUST be first */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    * {
+        @apply border-gray-200;
+    }
+
+    body {
+        @apply bg-light text-dark font-sans antialiased;
+        font-family: 'Inter', sans-serif;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        @apply font-heading font-semibold text-dark;
+    }
+
+    h1 {
+        @apply text-4xl;
+    }
+
+    h2 {
+        @apply text-3xl;
+    }
+
+    h3 {
+        @apply text-2xl;
+    }
+
+    h4 {
+        @apply text-xl;
+    }
+
+    h5 {
+        @apply text-lg;
+    }
+
+    h6 {
+        @apply text-base;
+    }
+}
+
+@layer components {
+
+    /* Gradient Background Utilities */
+    .bg-gradient-primary {
+        background-image: linear-gradient(310deg, #2152ff, #21d4fd);
+    }
+
+    .bg-gradient-success {
+        background-image: linear-gradient(310deg, #17ad37, #98ec2d);
+    }
+
+    .bg-gradient-danger {
+        background-image: linear-gradient(310deg, #ea0606, #ff667c);
+    }
+
+    .bg-gradient-warning {
+        background-image: linear-gradient(310deg, #f5b800, #ffd454);
+    }
+
+    .bg-gradient-info {
+        background-image: linear-gradient(310deg, #0ea5cc, #21d4fd);
+    }
+
+    .bg-gradient-dark {
+        background-image: linear-gradient(310deg, #141727, #2f3f9e);
+    }
+
+    .bg-gradient-purple {
+        background-image: linear-gradient(310deg, #7928CA, #FF0080);
+    }
+
+    /* Soft UI Card */
+    .card-soft {
+        @apply bg-white rounded-soft-xl shadow-soft-lg p-6 transition-all duration-300;
+    }
+
+    .card-soft:hover {
+        @apply shadow-soft-xxl;
+    }
+
+    /* Soft UI Button */
+    .btn-soft {
+        @apply px-6 py-3 rounded-soft-lg font-semibold text-sm transition-all duration-300 shadow-soft-sm;
+    }
+
+    .btn-soft:hover {
+        @apply shadow-soft-md transform -translate-y-0.5;
+    }
+
+    /* Gradient Text */
+    .text-gradient-primary {
+        background: linear-gradient(310deg, #2152ff, #21d4fd);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .text-gradient-success {
+        background: linear-gradient(310deg, #17ad37, #98ec2d);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    /* Glassmorphism Effect */
+    .glass {
+        @apply bg-white/80 backdrop-blur-md border border-white/20;
+    }
+
+    /* Smooth scroll */
+    .smooth-scroll {
+        scroll-behavior: smooth;
+    }
+}
+
+@layer utilities {
+
+    /* Custom transitions */
+    .transition-soft {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Text shadows for depth */
+    .text-shadow-sm {
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    .text-shadow-md {
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Blur backgrounds */
+    .backdrop-blur-soft {
+        backdrop-filter: blur(8px);
+    }
+}
