@@ -31,8 +31,8 @@ app.use(cors({
         'http://localhost:8081', // Expo web
         'http://localhost:8082', // Expo web alternate port
         'http://localhost:19006', // Expo web legacy
-        'https://jhomfoods-test-1.vercel.app',
-        'https://jhomfoods-test-1-9bso.vercel.app',
+        'https://tbmtc-aw1x.vercel.app', // Frontend website
+        'https://tbmtc.vercel.app', // Admin panel
         'https://tbmtc.onrender.com',
         process.env.CORS_ORIGIN
     ].filter(Boolean),
