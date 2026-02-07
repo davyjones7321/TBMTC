@@ -9,6 +9,10 @@ const { errorHandler, notFound } = require('./middleware/errorHandler');
 // Initialize express app
 const app = express();
 
+// Trust proxy - required for apps behind reverse proxies (Render, Heroku, etc.)
+// This allows express-rate-limit to correctly identify users via X-Forwarded-For header
+app.set('trust proxy', 1);
+
 // Connect to MongoDB
 connectDB();
 
