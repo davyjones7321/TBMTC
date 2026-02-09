@@ -8,8 +8,8 @@ import CartDrawer from "./components/CartDrawer";
 
 export const metadata: Metadata = {
   title: "JHOM FOODS - Premium Quality Meat & Seafood",
-  description: "Sustainably sourced, expertly selected, traceable from farm to table. Experience premium quality meat and seafood delivered fresh to your doorstep.",
-  keywords: "fresh meat, seafood, sustainable, traceable, quality, organic, farm to table, Bangalore",
+  description: "Sustainably sourced, expertly selected, traceable from farm to table. Experience premium quality meat and seafood delivered to your doorstep.",
+  keywords: "meat, seafood, sustainable, traceable, quality, organic, farm to table, Bangalore",
   openGraph: {
     title: "JHOM FOODS - Premium Quality Meat & Seafood",
     description: "Sustainably sourced, expertly selected, traceable from farm to table.",

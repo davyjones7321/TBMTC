@@ -33,8 +33,8 @@ const faqs = [
         category: 'Products & Quality',
         questions: [
             {
-                question: 'How do you ensure product freshness?',
-                answer: 'All our products are sourced fresh from farms and processed in temperature-controlled facilities. We maintain a strict cold chain from farm to your doorstep.',
+                question: 'How do you ensure product quality?',
+                answer: 'All our products are sourced from trusted farms and processed in temperature-controlled facilities. We maintain a strict cold chain from farm to your doorstep.',
             },
             {
                 question: 'Are your products antibiotic-free?',

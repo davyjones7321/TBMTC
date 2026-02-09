@@ -171,6 +171,34 @@ export const contactApi = {
     },
 };
 
+// Bulk Orders API
+export const bulkOrdersApi = {
+    getAll: async (params?: { page?: number; limit?: number; status?: string }): Promise<ApiResponse<{ bulkOrders: any[]; totalPages: number; currentPage: number; totalCount: number }>> => {
+        const { data } = await apiClient.get('/api/bulk-orders', { params });
+        return data;
+    },
+
+    getById: async (id: string): Promise<ApiResponse<{ bulkOrder: any }>> => {
+        const { data } = await apiClient.get(`/api/bulk-orders/${id}`);
+        return data;
+    },
+
+    updateStatus: async (id: string, status: string, notes?: string): Promise<ApiResponse<{ bulkOrder: any }>> => {
+        const { data } = await apiClient.put(`/api/bulk-orders/${id}`, { status, notes });
+        return data;
+    },
+
+    delete: async (id: string): Promise<ApiResponse> => {
+        const { data } = await apiClient.delete(`/api/bulk-orders/${id}`);
+        return data;
+    },
+
+    getStats: async (): Promise<ApiResponse<{ stats: any[]; totalCount: number; newCount: number }>> => {
+        const { data } = await apiClient.get('/api/bulk-orders/stats');
+        return data;
+    },
+};
+
 // Orders API
 export const ordersApi = {
     getAll: async (params?: {

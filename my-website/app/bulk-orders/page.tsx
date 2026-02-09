@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { API_BASE_URL } from '@/app/lib/api-config';
 import { BulkOrderFormData, BusinessType } from '@/app/types';
 
 const businessTypes: { value: BusinessType; label: string }[] = [
@@ -35,12 +36,34 @@ export default function BulkOrdersPage() {
         { id: 'vegetarian', label: 'Vegetarian' },
     ];
 
+    const [error, setError] = useState<string | null>(null);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
-        await new Promise((resolve) => setTimeout(resolve, 1500));
-        setIsSubmitting(false);
-        setIsSuccess(true);
+        setError(null);
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/bulk-orders`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Failed to submit request');
+            }
+
+            setIsSuccess(true);
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     const handleChange = (
@@ -151,6 +174,12 @@ export default function BulkOrdersPage() {
                             <p className="text-gray-600 mb-8">
                                 Fill out the form below and our team will get back to you within 24-48 hours.
                             </p>
+
+                            {error && (
+                                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
+                                    {error}
+                                </div>
+                            )}
 
                             <form onSubmit={handleSubmit} className="space-y-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

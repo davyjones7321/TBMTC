@@ -92,7 +92,7 @@ export default function RegisterPage() {
                         Create your account
                     </h2>
                     <p className="mt-2 text-gray-600">
-                        Join us for fresh, premium quality meat & seafood
+                        Join us for premium quality meat & seafood
                     </p>
                 </div>
 

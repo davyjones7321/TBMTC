@@ -4,13 +4,13 @@ export const categories: CategoryInfo[] = [
     {
         id: 'fish-seafood',
         name: 'Fish & Seafood',
-        description: 'Fresh catch from the ocean, sustainably sourced',
+        description: 'Premium catch from the ocean, sustainably sourced',
         icon: '🐟',
     },
     {
         id: 'poultry',
         name: 'Poultry',
-        description: 'Free-range chicken and farm-fresh eggs',
+        description: 'Free-range chicken and quality eggs',
         icon: '🍗',
     },
     {
@@ -28,7 +28,7 @@ export const categories: CategoryInfo[] = [
     {
         id: 'vegetarian',
         name: 'Vegetarian',
-        description: 'Fresh vegetables and plant-based options',
+        description: 'Quality vegetables and plant-based options',
         icon: '🥬',
     },
 ];
@@ -37,7 +37,7 @@ export const sampleProducts: LegacyProduct[] = [
     // Fish & Seafood
     {
         id: 'prod-001',
-        name: 'Fresh Salmon Fillet',
+        name: 'Salmon Fillet',
         description: 'Premium Atlantic salmon, rich in omega-3. Perfect for grilling, baking, or pan-searing.',
         price: 899,
         originalPrice: 1099,
@@ -63,7 +63,7 @@ export const sampleProducts: LegacyProduct[] = [
     {
         id: 'prod-003',
         name: 'Surmai (King Fish) Steaks',
-        description: 'Fresh Surmai steaks, firm and flavorful. A favorite for curries and fry preparations.',
+        description: 'Premium Surmai steaks, firm and flavorful. A favorite for curries and fry preparations.',
         price: 649,
         category: 'fish-seafood',
         image: '/images/products/surmai.jpg',
@@ -87,7 +87,7 @@ export const sampleProducts: LegacyProduct[] = [
     {
         id: 'prod-005',
         name: 'Free-Range Whole Chicken',
-        description: 'Farm-fresh free-range chicken, hormone-free. Tender meat with rich, natural flavor.',
+        description: 'Free-range chicken, hormone-free. Tender meat with rich, natural flavor.',
         price: 449,
         category: 'poultry',
         image: '/images/products/whole-chicken.jpg',
@@ -146,7 +146,7 @@ export const sampleProducts: LegacyProduct[] = [
     {
         id: 'prod-010',
         name: 'Mutton Keema',
-        description: 'Freshly minced goat meat. Perfect for kebabs, keema pav, or stuffed parathas.',
+        description: 'Premium minced goat meat. Perfect for kebabs, keema pav, or stuffed parathas.',
         price: 649,
         category: 'mutton',
         image: '/images/products/keema.jpg',
@@ -229,8 +229,8 @@ export const sampleProducts: LegacyProduct[] = [
     // Vegetarian
     {
         id: 'prod-017',
-        name: 'Paneer Fresh',
-        description: 'Soft, fresh cottage cheese made from pure milk. Perfect for curries and grills.',
+        name: 'Paneer Premium',
+        description: 'Soft, premium cottage cheese made from pure milk. Perfect for curries and grills.',
         price: 199,
         category: 'vegetarian',
         image: '/images/products/paneer.jpg',
@@ -241,7 +241,7 @@ export const sampleProducts: LegacyProduct[] = [
     {
         id: 'prod-018',
         name: 'Mushroom Mix',
-        description: 'Assorted fresh mushrooms - button, oyster, and shiitake.',
+        description: 'Assorted premium mushrooms - button, oyster, and shiitake.',
         price: 179,
         category: 'vegetarian',
         image: '/images/products/mushrooms.jpg',

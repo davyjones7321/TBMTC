@@ -16,6 +16,7 @@ import {
     FolderTree,
     Settings,
     MessageSquare,
+    Briefcase,
 } from 'lucide-react';
 
 const AdminLayout: React.FC = () => {
@@ -36,6 +37,7 @@ const AdminLayout: React.FC = () => {
         { path: '/orders', label: 'Orders', icon: ShoppingCart },
         { path: '/customers', label: 'Customers', icon: Users },
         { path: '/queries', label: 'Queries', icon: MessageSquare },
+        { path: '/bulk-orders', label: 'Bulk Orders', icon: Briefcase },
         { path: '/users', label: 'User Management', icon: Shield },
         { path: '/reports', label: 'Reports', icon: TrendingUp },
         { path: '/settings', label: 'Settings', icon: Settings },

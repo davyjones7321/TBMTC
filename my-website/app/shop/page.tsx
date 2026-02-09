@@ -71,10 +71,10 @@ export default function ShopPage() {
                             className="text-4xl lg:text-5xl font-bold mb-4"
                             style={{ fontFamily: 'var(--font-display)' }}
                         >
-                            Shop Fresh
+                            Shop Now
                         </h1>
                         <p className="text-lg" style={{ color: '#000000' }}>
-                            Premium quality meat and seafood, handpicked for excellence and delivered fresh to your door.
+                            Premium quality meat and seafood, handpicked for excellence and delivered to your door.
                         </p>
                     </div>
                 </div>

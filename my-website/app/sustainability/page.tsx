@@ -42,7 +42,7 @@ export default function SustainabilityPage() {
                                 title: '100% Recyclable Packaging',
                                 description: 'Our packaging is designed with the environment in mind. From compostable insulation to recyclable boxes, we minimize waste at every step.',
                                 details: [
-                                    'Frozen at peak freshness to reduce waste',
+                                    'Frozen at peak quality to reduce waste',
                                     'Compostable insulation materials',
                                     '100% recyclable outer packaging',
                                     'Reduced plastic use across all products',

@@ -76,7 +76,7 @@ export default function ContactPage() {
                                             <h3 className="font-semibold text-gray-900 mb-1">Address</h3>
                                             <p className="text-gray-600 text-sm">
                                                 JHOM FOODS Pvt. Ltd.<br />
-                                                123 Fresh Market Lane<br />
+                                                123 Market Lane<br />
                                                 Koramangala, Bangalore<br />
                                                 Karnataka 560034
                                             </p>

@@ -22,6 +22,7 @@ import CategoryList from './pages/categories/CategoryList';
 import CategoryForm from './pages/categories/CategoryForm';
 import Settings from './pages/settings/Settings';
 import Queries from './pages/queries/Queries';
+import BulkOrders from './pages/bulk-orders/BulkOrders';
 import './index.css';
 
 const queryClient = new QueryClient({
@@ -68,6 +69,7 @@ function AppRoutes() {
         <Route path="customers" element={<CustomerList />} />
         <Route path="customers/:id" element={<CustomerDetail />} />
         <Route path="queries" element={<Queries />} />
+        <Route path="bulk-orders" element={<BulkOrders />} />
         <Route path="users" element={<AdminUsers />} />
         <Route path="reports" element={<SalesReports />} />
         <Route path="categories" element={<CategoryList />} />

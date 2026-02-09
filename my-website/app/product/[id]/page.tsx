@@ -222,7 +222,7 @@ export default function ProductPage({ params }: Props) {
                             <div className="grid grid-cols-2 gap-4">
                                 {[
                                     { icon: '🌿', text: 'Sustainably Sourced' },
-                                    { icon: '❄️', text: 'Fresh Frozen' },
+                                    { icon: '❄️', text: 'Flash Frozen' },
                                     { icon: '🚚', text: 'Fast Delivery' },
                                     { icon: '✓', text: 'Quality Assured' },
                                 ].map((feature, i) => (

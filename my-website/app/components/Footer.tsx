@@ -81,7 +81,7 @@ export default function Footer() {
                                 </span>
                             </Link>
                             <p className="text-gray-400 leading-relaxed mb-6 max-w-sm">
-                                Premium quality meat and seafood, sustainably sourced and delivered fresh to your doorstep. Experience the difference of farm-to-table freshness.
+                                Premium quality meat and seafood, sustainably sourced and delivered to your doorstep. Experience the difference of farm-to-table quality.
                             </p>
                             <div className="flex items-center gap-3">
                                 {socialLinks.map((social) => (

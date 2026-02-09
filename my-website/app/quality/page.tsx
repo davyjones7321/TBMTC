@@ -170,7 +170,7 @@ export default function QualityPage() {
                 <div className="container">
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
                         {[
-                            { value: '100%', label: 'Fresh Guaranteed' },
+                            { value: '100%', label: 'Quality Guaranteed' },
                             { value: '24hr', label: 'Farm to Table' },
                             { value: '50+', label: 'Partner Farms' },
                             { value: '0', label: 'Preservatives Added' },

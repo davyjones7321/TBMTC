@@ -97,7 +97,7 @@ export default function TermsOfServicePage() {
                                     5. Product Quality
                                 </h2>
                                 <p className="text-gray-600">
-                                    We are committed to delivering fresh, high-quality products. If you receive a product
+                                    We are committed to delivering high-quality products. If you receive a product
                                     that does not meet our quality standards, please contact us within 24 hours of delivery
                                     for a refund or replacement.
                                 </p>
@@ -178,7 +178,7 @@ export default function TermsOfServicePage() {
                                 Ready to Shop?
                             </h2>
                             <p className="text-sky-600 text-lg mb-8">
-                                Browse our selection of fresh, ethically sourced products.
+                                Browse our selection of premium, ethically sourced products.
                             </p>
                             <Link
                                 href="/shop"

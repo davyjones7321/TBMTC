@@ -18,8 +18,8 @@ export default function Home() {
     <>
       {/* Hero Section */}
       <Hero
-        title="Premium Quality Meat & Seafood, Delivered Fresh"
-        subtitle="Sustainably sourced, expertly selected, traceable from farm to table. Experience the difference of farm-to-door freshness."
+        title="Premium Quality Meat & Seafood, Delivered to You"
+        subtitle="Sustainably sourced, expertly selected, traceable from farm to table. Experience the difference of quality you can trust."
         primaryCta={{ text: 'Shop Now', href: '/shop' }}
         secondaryCta={{ text: 'Learn Our Story', href: '/our-story' }}
         size="large"
@@ -293,7 +293,7 @@ export default function Home() {
                 className="text-3xl lg:text-5xl font-bold mb-4 text-sky-600"
                 style={{ fontFamily: 'var(--font-display)' }}
               >
-                Shop Fresh. Shop Easy.
+                Shop Smart. Shop Easy.
               </h2>
               <p className="text-lg lg:text-xl text-sky-600">
                 Download our app for exclusive deals, faster checkout, and seamless ordering experience.

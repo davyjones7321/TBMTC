@@ -1,7 +1,15 @@
 # JHOM FOODS Website Analysis
 
 > **Document Created:** 2026-01-29 @ 17:44 IST  
-> **Last Updated:** 2026-02-04 @ 14:07 IST
+> **Last Updated:** 2026-02-09 @ 14:43 IST
+
+---
+
+## ⚠️ Rules
+
+1. Do not generate sample data or mock data, only if it is necessary.
+2. Update `analyze.md` file if you make any changes in the website.
+3. If you want to make changes in backend, ask permission from the user.
 
 ---
 
@@ -12,10 +20,13 @@
 3. [Project Structure](#project-structure)
 4. [Pages & Routes](#pages--routes)
 5. [Components](#components)
-6. [State Management](#state-management)
-7. [Types & Interfaces](#types--interfaces)
-8. [Styling System](#styling-system)
-9. [Change Log](#change-log)
+6. [Hooks](#hooks)
+7. [State Management](#state-management)
+8. [API Layer](#api-layer)
+9. [Types & Interfaces](#types--interfaces)
+10. [Styling System](#styling-system)
+11. [Statistics](#statistics)
+12. [Change Log](#change-log)
 
 ---
 
@@ -23,19 +34,16 @@
 
 **JHOM FOODS** is a premium quality meat and seafood e-commerce website built with Next.js. The website offers:
 
-- Fresh meat and seafood products
+- Premium quality meat and seafood products
 - E-commerce shopping cart functionality
-- Checkout system
+- Checkout system with backend integration
+- User authentication (login, register, password reset)
+- User account management (profile, orders, password change)
 - Contact and bulk order forms
 - Brand pages (Our Story, Quality, Certifications, Sustainability)
+- Legal pages (Privacy, Terms, FAQ)
 
 ---
-
-## rules 
-1. do not generate sample data or mock date , only if it is nessacry. 
-2. update analize.md file if you make any changes in the website
-3. if you want to make changes in backend then ask permission from the user
-
 
 ## 🛠 Technology Stack
 
@@ -55,9 +63,11 @@
 ```
 my-website/
 ├── app/
-│   ├── components/          # Reusable UI components
+│   ├── components/          # Reusable UI components (10 files)
 │   │   ├── CartDrawer.tsx
 │   │   ├── ContactForm.tsx
+│   │   ├── DisclaimerBanner.tsx
+│   │   ├── FeaturedProducts.tsx
 │   │   ├── Footer.tsx
 │   │   ├── Header.tsx
 │   │   ├── Hero.tsx
@@ -65,30 +75,46 @@ my-website/
 │   │   ├── StorySection.tsx
 │   │   └── ValueCard.tsx
 │   ├── context/             # React Context providers
+│   │   ├── AuthContext.tsx
 │   │   └── CartContext.tsx
-│   ├── data/                # Sample data
+│   ├── data/                # Sample/static data
 │   │   └── sample-products.ts
+│   ├── hooks/               # Custom React hooks
+│   │   └── useProducts.ts
+│   ├── lib/                 # Utilities & API layer
+│   │   ├── api-config.ts
+│   │   ├── api.ts
+│   │   └── image-map.ts
 │   ├── types/               # TypeScript type definitions
 │   │   └── index.ts
+│   ├── account/             # User account pages
+│   │   ├── layout.tsx
+│   │   ├── page.tsx
+│   │   ├── orders/
+│   │   │   └── page.tsx
+│   │   └── password/
+│   │       └── page.tsx
 │   ├── bulk-orders/         # Bulk orders page
 │   ├── cart/                # Cart page
 │   ├── certifications/      # Certifications page
 │   ├── checkout/            # Checkout page
 │   ├── contact/             # Contact page
+│   ├── faq/                 # FAQ page
+│   ├── forgot-password/     # Password reset request page
+│   ├── login/               # Login page
 │   ├── our-story/           # Our Story page
-│   ├── product/             # Product detail page
+│   ├── privacy/             # Privacy policy page
+│   ├── product/             # Product detail page [id]
 │   ├── quality/             # Quality page
+│   ├── register/            # User registration page
+│   ├── reset-password/      # Password reset page [token]
 │   ├── shop/                # Shop pages with category routing
 │   ├── sustainability/      # Sustainability page
+│   ├── terms/               # Terms of service page
 │   ├── globals.css          # Global styles & design system
 │   ├── layout.tsx           # Root layout with providers
 │   └── page.tsx             # Homepage
 ├── public/                  # Static assets
-│   ├── file.svg
-│   ├── globe.svg
-│   ├── next.svg
-│   ├── vercel.svg
-│   └── window.svg
 ├── next.config.ts           # Next.js configuration
 ├── tailwind.config.ts       # TailwindCSS configuration
 ├── tsconfig.json            # TypeScript configuration
@@ -106,13 +132,23 @@ my-website/
 | `/shop/[category]` | `app/shop/[category]/page.tsx` | Category-filtered product listing |
 | `/product/[id]` | `app/product/[id]/page.tsx` | Individual product detail page |
 | `/cart` | `app/cart/page.tsx` | Shopping cart page |
-| `/checkout` | `app/checkout/page.tsx` | Checkout page |
+| `/checkout` | `app/checkout/page.tsx` | Checkout page (requires login) |
+| `/login` | `app/login/page.tsx` | User login page |
+| `/register` | `app/register/page.tsx` | User registration page |
+| `/forgot-password` | `app/forgot-password/page.tsx` | Request password reset |
+| `/reset-password/[token]` | `app/reset-password/[token]/page.tsx` | Reset password with token |
+| `/account` | `app/account/page.tsx` | User profile page |
+| `/account/orders` | `app/account/orders/page.tsx` | Order history page |
+| `/account/password` | `app/account/password/page.tsx` | Change password page |
 | `/our-story` | `app/our-story/page.tsx` | Brand story page |
 | `/quality` | `app/quality/page.tsx` | Quality standards page |
 | `/certifications` | `app/certifications/page.tsx` | Certifications display |
 | `/sustainability` | `app/sustainability/page.tsx` | Sustainability initiatives |
 | `/contact` | `app/contact/page.tsx` | Contact form page |
 | `/bulk-orders` | `app/bulk-orders/page.tsx` | B2B bulk order inquiries |
+| `/privacy` | `app/privacy/page.tsx` | Privacy policy page |
+| `/terms` | `app/terms/page.tsx` | Terms of service page |
+| `/faq` | `app/faq/page.tsx` | Frequently asked questions |
 
 ---
 
@@ -122,16 +158,18 @@ my-website/
 
 | Component | File | Purpose |
 |-----------|------|---------|
-| `Header` | `Header.tsx` | Navigation bar with logo, menu, cart icon |
+| `Header` | `Header.tsx` | Navigation bar with logo, menu, user auth menu, cart icon |
 | `Footer` | `Footer.tsx` | Site footer with links, contact info |
 | `Hero` | `Hero.tsx` | Homepage hero banner section |
 | `CartDrawer` | `CartDrawer.tsx` | Slide-out cart sidebar |
+| `DisclaimerBanner` | `DisclaimerBanner.tsx` | Scrolling disclaimer banner |
 
 ### Product Components
 
 | Component | File | Purpose |
 |-----------|------|---------|
 | `ProductCard` | `ProductCard.tsx` | Product display card with add-to-cart |
+| `FeaturedProducts` | `FeaturedProducts.tsx` | Featured products section for homepage |
 
 ### Content Components
 
@@ -139,11 +177,29 @@ my-website/
 |-----------|------|---------|
 | `ValueCard` | `ValueCard.tsx` | Value proposition cards |
 | `StorySection` | `StorySection.tsx` | Story block with image and text |
-| `ContactForm` | `ContactForm.tsx` | Contact form component |
+| `ContactForm` | `ContactForm.tsx` | Contact form component (integrated with backend) |
+
+---
+
+## 🪝 Hooks
+
+| Hook | File | Purpose |
+|------|------|---------|
+| `useProducts` | `useProducts.ts` | Fetch products from backend API with filtering |
 
 ---
 
 ## 🔄 State Management
+
+### Auth Context (`AuthContext.tsx`)
+
+Manages user authentication state with token storage.
+
+**Exposed Values:**
+- `user` - Current logged-in user object
+- `isAuthenticated` - Boolean auth status
+- `login()` / `logout()` - Auth methods
+- `updateProfile()` - Update user profile
 
 ### Cart Context (`CartContext.tsx`)
 
@@ -165,10 +221,32 @@ The cart uses React Context + useReducer pattern with localStorage persistence.
 
 ---
 
+## 🔌 API Layer
+
+### Files
+
+| File | Purpose |
+|------|---------|
+| `api-config.ts` | API endpoint configuration |
+| `api.ts` | Axios-based API client with auth interceptors |
+| `image-map.ts` | Product image mapping utilities |
+
+### Available API Methods
+
+- **Auth:** `login()`, `register()`, `logout()`
+- **Products:** `getAll()`, `getById()`, `getByCategory()`, `getFeatured()`
+- **Categories:** `getAll()`
+- **Orders:** `create()`, `getMyOrders()`
+- **Profile:** `get()`, `changePassword()`
+- **Contact:** `submit()`
+
+---
+
 ## 📝 Types & Interfaces
 
 ### Product Types
-- `Product` - Product entity with id, name, price, category, etc.
+- `Product` - Product entity with _id, name, price, category, etc.
+- `LegacyProduct` - Static product type with id (for sample data)
 - `ProductCategory` - Category enum (fish-seafood, poultry, mutton, ready-to-cook, vegetarian)
 - `CategoryInfo` - Category metadata
 
@@ -186,6 +264,10 @@ The cart uses React Context + useReducer pattern with localStorage persistence.
 ### Form Types
 - `ContactFormData` - Contact form fields
 - `BulkOrderFormData` - Bulk order form fields
+
+### Auth Types
+- `User` - User entity
+- `AuthState` - Authentication state
 
 ---
 
@@ -207,8 +289,22 @@ The project uses a comprehensive CSS design system defined in `globals.css`:
 - Custom button styles (`.btn`, `.btn-primary`, `.btn-outline`)
 - Form input styles
 - Card styles (`.product-card`)
-- Animation utilities
+- Animation utilities (including `marquee-reverse`)
 - Responsive breakpoints
+
+---
+
+## 📊 Statistics
+
+| Metric | Count |
+|--------|-------|
+| Total Pages/Routes | 22 |
+| Components | 10 |
+| Contexts | 2 |
+| Custom Hooks | 1 |
+| Lib Files | 3 |
+| Product Categories | 5 |
+| TypeScript Interfaces | 15+ |
 
 ---
 
@@ -217,7 +313,7 @@ The project uses a comprehensive CSS design system defined in `globals.css`:
 ### Template for New Entries
 
 ```
-### [DATE] @ [TIME]
+### [DATE] @ [TIME] IST - [Brief Title]
 
 #### ✨ Added
 - 
@@ -228,6 +324,9 @@ The project uses a comprehensive CSS design system defined in `globals.css`:
 #### 🗑 Removed
 - 
 
+#### 🐛 Fixed
+- 
+
 #### 📁 Files Changed
 - 
 
@@ -237,19 +336,58 @@ The project uses a comprehensive CSS design system defined in `globals.css`:
 
 ---
 
-### 2026-02-04 @ 17:01 IST - Disclaimer Banner Refined
+### 2026-02-09 @ 14:43 IST - Removing "Fresh" Terminology
 
 #### 🔧 Modified
-- **Disclaimer Banner:**
-  - Background changed to transparent.
-  - Text styling updated to thin/light font weight (`font-light`).
-  - Animation direction reversed (Left to Right).
-  - Added `marquee-reverse` animation to `globals.css`.
+- Removed all instances of "fresh" and "freshness" text from the website
+- Business is focused on frozen products, so neutral terminology is used
+- Replaced with alternatives like "premium", "quality", "flash frozen"
+
+#### 📁 Files Changed
+- `app/page.tsx` - Hero title, subtitle, "Shop Smart" section
+- `app/shop/page.tsx` - Hero title and description
+- `app/quality/page.tsx` - Stats label "Quality Guaranteed"
+- `app/product/[id]/page.tsx` - Changed "Fresh Frozen" to "Flash Frozen"
+- `app/register/page.tsx` - Registration subtitle
+- `app/faq/page.tsx` - FAQ about product quality
+- `app/terms/page.tsx` - Product quality section and CTA
+- `app/sustainability/page.tsx` - Packaging details
+- `app/contact/page.tsx` - Address from "Fresh Market Lane" to "Market Lane"
+- `app/components/Footer.tsx` - Footer description
+- `app/layout.tsx` - SEO metadata description and keywords
+- `app/data/sample-products.ts` - Product names and descriptions
+
+---
+
+### 2026-02-09 @ 14:37 IST - Documentation Update
+
+#### 🔧 Modified
+- **Complete rewrite of `analyze.md`** to reflect current project state
+- Added missing directories: `lib/`, `hooks/`, `account/`, `login/`, `register/`, `forgot-password/`, `reset-password/`, `privacy/`, `terms/`, `faq/`
+- Added missing components: `DisclaimerBanner.tsx`, `FeaturedProducts.tsx`
+- Added missing context: `AuthContext.tsx`
+- Updated statistics to reflect actual counts (22 pages, 10 components)
+- Reorganized change log in chronological order (newest first)
+- Added new sections: Hooks, API Layer
+- Moved Rules section to top with proper formatting
+
+---
+
+### 2026-02-07 @ ~13:00 IST - CORS and JWT Fixes
+
+#### 🔧 Modified
+- Backend configured to trust proxies for production deployment
+- JWT expiration times adjusted for production environment
+
+#### 📝 Notes
+- See `backend/analyze.md` for backend-specific changes
+
+---
 
 ### 2026-02-04 @ 17:10 IST - Quality Text Update
 
 #### 🔧 Modified
-- **Content:** Replaced "pasture-raised beef" with "pasture-raised goats" in Quality sections.
+- Replaced "pasture-raised beef" with "pasture-raised goats" in Quality sections
 
 #### 📁 Files Changed
 - `app/page.tsx`
@@ -260,33 +398,36 @@ The project uses a comprehensive CSS design system defined in `globals.css`:
 ### 2026-02-04 @ 17:04 IST - Disclaimer Text Update
 
 #### 🔧 Modified
-- **Disclaimer Banner:**
-  - Updated text to use symbol: "-18 °C" instead of "-18 degrees celsius".
+- Updated temperature symbol: "-18 °C" instead of "-18 degrees celsius"
 
 #### 📁 Files Changed
 - `app/components/DisclaimerBanner.tsx`
 
 ---
 
-### 2026-02-04 @ 14:18 IST - Product Page Update
+### 2026-02-04 @ 17:01 IST - Disclaimer Banner Refined
 
 #### 🔧 Modified
-- **Product Detail Page:** 
-  - Switched from static data to dynamic backend data fetching
-  - Implemented `useProduct` hook to fetch product details by ID
-  - Updated UI to display larger high-resolution product images
-  - Added "Related Products" section dynamically fetched by category
-  - Improved "Add to Cart" and stock status display with animations
-
-#### 🔧 Fixed
-- **Header Visibility:**
-  - Implemented dynamic contrast handling in `Header.tsx`
-  - Logo and navigation now automatically switch to dark text on non-home pages
-  - Solved issue where header was invisible on white backgrounds
+- Background changed to transparent
+- Text styling updated to thin/light font weight (`font-light`)
+- Animation direction reversed (Left to Right)
+- Added `marquee-reverse` animation to `globals.css`
 
 ---
 
-### 2026-02-04 @ 15:58 IST - Contact Form Update
+### 2026-02-04 @ 16:25 IST - Contact Page Updates
+
+#### 🔧 Modified
+- `app/contact/page.tsx` - Removed "Follow Us" social links section
+- `app/lib/api.ts` - Updated `contact.submit` signature to include `subject`
+- `app/components/ContactForm.tsx` - Integrated with real backend API
+
+#### 📝 Notes
+- Contact form submissions now properly send the `subject` field to the backend
+
+---
+
+### 2026-02-04 @ 15:58 IST - Contact Form Backend Integration
 
 #### 🔧 Modified
 - Connected `ContactForm.tsx` to real backend API (`/api/contact`)
@@ -296,24 +437,28 @@ The project uses a comprehensive CSS design system defined in `globals.css`:
 #### 📁 Files Changed
 - `app/components/ContactForm.tsx`
 
-#### 📝 Notes
-- Contact form now fully functional and integrated with backend.
+---
+
+### 2026-02-04 @ 14:18 IST - Product Page Update
+
+#### 🔧 Modified
+- Switched from static data to dynamic backend data fetching
+- Implemented `useProduct` hook to fetch product details by ID
+- Updated UI to display larger high-resolution product images
+- Added "Related Products" section dynamically fetched by category
+- Improved "Add to Cart" and stock status display with animations
+
+#### 🔧 Fixed
+- **Header Visibility:** Implemented dynamic contrast handling in `Header.tsx`
+- Logo and navigation now automatically switch to dark text on non-home pages
 
 ---
 
 ### 2026-02-04 @ 14:12 IST - Shop Grid Update
 
 #### 🔧 Modified
-- **Shop Layout:** Updated product grid to display 4 cards per row on large screens (previously 3)
+- Updated product grid to display 4 cards per row on large screens (previously 3)
 - Affects `/shop` and `/shop/[category]` pages
-
----
-
-### 2026-02-04 @ 14:07 IST - Documentation Update
-
-#### 🔧 Modified
-- Verified documentation accuracy against codebase state
-- Updated `analyze.md` color palette to reflect Sky Blue theme
 
 ---
 
@@ -322,6 +467,67 @@ The project uses a comprehensive CSS design system defined in `globals.css`:
 #### 🔧 Modified
 - Updated text colors to black for better contrast and readability
 - Fixed visibility issues on gradient backgrounds
+
+---
+
+### 2026-01-30 @ 14:30 IST - Critical Checkout Bug Fix
+
+#### 🐛 Fixed
+- **CRITICAL:** Checkout was NOT saving orders to backend!
+- `handlePlaceOrder()` was only simulating an API call
+- Now correctly calls `api.orders.create()` with proper order data
+
+#### ✨ Added
+- Authentication check - redirects to login if user is not authenticated
+- Auth loading state - shows spinner while checking authentication
+- Order number display on success page
+- "View My Orders" button on order success page
+- Error display for failed order placements
+
+#### 📁 Files Changed
+- `app/checkout/page.tsx`
+
+---
+
+### 2026-01-30 @ 13:56 IST - Bug Fixes & API Updates
+
+#### 🐛 Fixed
+- `app/cart/page.tsx` - Fixed TypeScript errors for Product/LegacyProduct type handling
+- Added helper functions: `getProductId()`, `getCategorySlug()`, `getProductWeight()`
+- `app/account/orders/page.tsx` - Fixed order item display
+
+#### 🔧 Modified
+- `app/lib/api-config.ts` - Changed categories endpoint from `/api/admin/categories` to `/api/categories` (public)
+- `app/types/index.ts` - Updated Order item type to handle populated product objects
+- `app/data/sample-products.ts` - Changed type from `Product` to `LegacyProduct`
+
+---
+
+### 2026-01-30 @ 13:13 IST - User Account Feature Implementation
+
+#### ✨ Added
+- `/account` - User profile page with edit functionality
+- `/account/orders` - Order history page with status badges
+- `/account/password` - Change password page
+- `/forgot-password` - Request password reset page
+- `/reset-password/[token]` - Reset password with token page
+- Header user menu dropdown (avatar, account links, logout)
+- Login/Sign Up buttons in Header for logged-out users
+- Auth protection for account pages
+
+#### 🔧 Modified
+- `app/lib/api-config.ts` - Added profile endpoints
+- `app/lib/api.ts` - Added profile methods
+- `app/context/AuthContext.tsx` - Added updateProfile() method
+- `app/components/Header.tsx` - Complete rewrite with user authentication menu
+
+#### 📁 Files Created
+- `app/account/layout.tsx`
+- `app/account/page.tsx`
+- `app/account/orders/page.tsx`
+- `app/account/password/page.tsx`
+- `app/forgot-password/page.tsx`
+- `app/reset-password/[token]/page.tsx`
 
 ---
 
@@ -352,7 +558,7 @@ The project uses a comprehensive CSS design system defined in `globals.css`:
 - `app/layout.tsx` - Root layout
 - `app/page.tsx` - Homepage
 - `app/globals.css` - Design system
-- `app/components/*` - All 8 components
+- `app/components/*` - All components
 - `app/context/CartContext.tsx` - Cart state management
 - `app/data/sample-products.ts` - Product data
 - `app/types/index.ts` - TypeScript definitions
@@ -363,116 +569,6 @@ The project uses a comprehensive CSS design system defined in `globals.css`:
 - Uses TailwindCSS v4 with custom CSS design system
 - All pages have proper metadata for SEO
 - Cart persists to localStorage
-
----
-
-## 📊 Statistics
-
-| Metric | Count |
-|--------|-------|
-| Total Pages | 12 |
-| Components | 8 |
-| Product Categories | 5 |
-| Sample Products | ~18 |
-| TypeScript Interfaces | 15+ |
-| CSS Lines | 873 |
-
----
-
-### 2026-01-30 @ 13:13 IST - User Account Feature Implementation
-
-#### ✨ Added
-- `/account` - User profile page with edit functionality
-- `/account/orders` - Order history page with status badges
-- `/account/password` - Change password page
-- `/forgot-password` - Request password reset page
-- `/reset-password/[token]` - Reset password with token page
-- Header user menu dropdown (avatar, account links, logout)
-- Login/Sign Up buttons in Header for logged-out users
-- Auth protection for account pages (redirect to login)
-
-#### 🔧 Modified
-- `app/lib/api-config.ts` - Added profile.get and profile.changePassword endpoints
-- `app/lib/api.ts` - Added profile.get() and profile.changePassword() methods
-- `app/context/AuthContext.tsx` - Added updateProfile() method
-- `app/components/Header.tsx` - Complete rewrite with user authentication menu
-
-#### 📁 Files Created
-- `app/account/layout.tsx` - Account section layout with sidebar navigation
-- `app/account/page.tsx` - Profile view/edit page
-- `app/account/orders/page.tsx` - Order history page
-- `app/account/password/page.tsx` - Password change page
-- `app/forgot-password/page.tsx` - Forgot password form
-- `app/reset-password/[token]/page.tsx` - Password reset form
-
-#### 📝 Notes
-- All features use existing backend APIs (no backend changes needed)
-- Header shows user avatar + dropdown when logged in
-- Header shows Login/Sign Up buttons when logged out
-- Account pages are protected - redirect to login if not authenticated
-- Order history fetches from `/api/orders/my-orders`
-- Password change uses `/api/profile/password`
-
----
-
-### 2026-01-30 @ 13:56 IST - Bug Fixes & API Updates
-
-#### 🐛 Fixed
-- `app/cart/page.tsx` - Fixed TypeScript errors for Product/LegacyProduct type handling
-  - Added helper functions: `getProductId()`, `getCategorySlug()`, `getProductWeight()`
-  - Now handles both MongoDB Product (with `_id`) and LegacyProduct (with `id`)
-- `app/data/sample-products.ts` - Changed type from `Product` to `LegacyProduct` for static sample data
-- `app/types/index.ts` - Updated Order item type to handle populated product objects from API
-- `app/account/orders/page.tsx` - Fixed order item display to get product name from populated object or fallback
-
-#### 🔧 Modified
-- `app/lib/api-config.ts` - Changed categories endpoint from `/api/admin/categories` to `/api/categories` (public)
-- `app/account/orders/page.tsx` - Added debug logging for troubleshooting orders display
-
-#### 📝 Notes
-- Categories endpoint was returning 403 Forbidden because it was using admin-only endpoint
-- Cart page now handles both MongoDB Product type (from API) and LegacyProduct type (from static data)
-- Order history now properly displays product names from populated product objects
-
----
-
-### 2026-01-30 @ 14:30 IST - Critical Checkout Bug Fix
-
-#### 🐛 Fixed
-- **CRITICAL:** `app/checkout/page.tsx` - Checkout was NOT actually saving orders to backend!
-  - `handlePlaceOrder()` was only simulating an API call with a 2-second delay
-  - Now correctly calls `api.orders.create()` with proper order data
-  - Orders will now appear in "My Orders" page after checkout
-
-#### ✨ Added
-- Authentication check - redirects to login if user is not authenticated
-- Auth loading state - shows spinner while checking authentication
-- Order number display on success page
-- "View My Orders" button on order success page
-- Error display for failed order placements
-- `mapPaymentMethod()` helper to convert frontend payment types to backend enum
-
-#### 📁 Files Changed
-- `app/checkout/page.tsx` - Major update to actually create orders via API
-
-#### 📝 Notes
-- Root cause: The checkout page was never calling the backend API
-- Orders placed before this fix were never saved to the database
-- New orders will now properly appear in order history
-- Checkout now requires user to be logged in
-
----
-
-### 2026-02-04 @ 16:25 IST - Contact Page Updates
-
-#### 🔧 Modified
-- `app/contact/page.tsx` - Removed "Follow Us" social links section.
-- `app/lib/api.ts` - Updated `contact.submit` signature to include `subject`.
-- `app/components/ContactForm.tsx` - Integrated with real backend API, removed simulation logic.
-
-#### 📝 Notes
-- Contact form submissions now properly send the `subject` field to the backend.
-- "Follow Us" section removed from Contact page side panel.
 
 ---
 

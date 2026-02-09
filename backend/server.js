@@ -72,6 +72,7 @@ app.use('/api/admin/users', require('./routes/users'));
 app.use('/api/admin/settings', require('./routes/settings'));
 app.use('/api/profile', require('./routes/profile'));
 app.use('/api/contact', require('./routes/contact'));
+app.use('/api/bulk-orders', require('./routes/bulkOrders'));
 app.use('/api/categories', require('./routes/publicCategories'));
 app.use('/api/migrations', require('./routes/migrations'));
 
