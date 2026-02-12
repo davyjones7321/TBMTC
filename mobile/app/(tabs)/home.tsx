@@ -7,27 +7,21 @@ import {
     TextInput,
     StyleSheet,
     StatusBar,
-    Image,
+    ScrollView,
     ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { Search, MapPin, Mic, ShoppingCart, RefreshCw, ChevronDown } from 'lucide-react-native';
+import { Search, MapPin, ShoppingCart, ChevronDown, SlidersHorizontal } from 'lucide-react-native';
 import { useProducts } from '../../src/contexts/ProductsContext';
 import { useLocation } from '../../src/contexts/LocationContext';
 import CategoryNav from '../../src/components/CategoryNav';
 import ProductCard from '../../src/components/ProductCard';
+import HeroSection from '../../src/components/HeroSection';
+import WeeklySelection from '../../src/components/WeeklySelection';
+import BulkOrdersCTA from '../../src/components/BulkOrdersCTA';
 import { useCart } from '../../src/contexts/CartContext';
-
-// Premium colors - Coral/Teal palette
-const COLORS = {
-    coral: '#D84A4A',
-    coralLight: '#E57373',
-    teal: '#4A9B9B',
-    charcoal: '#2D3436',
-    slate: '#636E72',
-    cream: '#FFF8F0',
-};
+import { COLORS, FONTS, RADIUS, SHADOWS, SPACING } from '../../src/lib/theme';
 
 export default function HomeScreen() {
     const router = useRouter();
@@ -68,7 +62,7 @@ export default function HomeScreen() {
 
     return (
         <View style={styles.container}>
-            <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+            <StatusBar barStyle="dark-content" backgroundColor={COLORS.background} />
 
             {/* Header */}
             <SafeAreaView edges={['top']} style={styles.header}>
@@ -80,9 +74,9 @@ export default function HomeScreen() {
                         activeOpacity={0.7}
                     >
                         <View style={styles.locationLabel}>
-                            <MapPin size={12} color={COLORS.coral} />
+                            <MapPin size={12} color={COLORS.primary} />
                             <Text style={styles.locationLabelText}>Delivering to</Text>
-                            <ChevronDown size={12} color={COLORS.coral} style={{ marginLeft: 2 }} />
+                            <ChevronDown size={12} color={COLORS.primary} style={{ marginLeft: 2 }} />
                         </View>
                         <Text style={styles.locationText} numberOfLines={1}>
                             {selectedLocation
@@ -97,7 +91,7 @@ export default function HomeScreen() {
                             style={styles.cartButton}
                             onPress={() => router.push('/cart')}
                         >
-                            <ShoppingCart size={22} color={COLORS.coral} />
+                            <ShoppingCart size={22} color={COLORS.primary} />
                             {cartCount > 0 && (
                                 <View style={styles.cartBadge}>
                                     <Text style={styles.cartBadgeText}>
@@ -111,57 +105,73 @@ export default function HomeScreen() {
 
                 {/* Search Bar */}
                 <View style={styles.searchContainer}>
-                    <Search size={18} color={COLORS.slate} />
+                    <Search size={18} color={COLORS.textSecondary} />
                     <TextInput
                         style={styles.searchInput}
                         placeholder="Search for fresh meat, seafood..."
-                        placeholderTextColor="#9CA3AF"
+                        placeholderTextColor={COLORS.textLight}
                         value={searchQuery}
                         onChangeText={setSearchQuery}
                     />
-                    <TouchableOpacity style={styles.micButton}>
-                        <Mic size={18} color={COLORS.coral} />
+                    <TouchableOpacity style={styles.filterButton}>
+                        <SlidersHorizontal size={18} color={COLORS.primary} />
                     </TouchableOpacity>
                 </View>
             </SafeAreaView>
 
-            {/* Category Navigation */}
-            <CategoryNav
-                activeCategory={activeCategory}
-                onCategoryChange={setActiveCategory}
-                categories={categories}
-            />
-
-            {/* Section Title */}
-            <View style={styles.sectionHeader}>
-                <Text style={styles.sectionTitle}>{getCategoryTitle()}</Text>
-            </View>
-
-            {/* Products Grid */}
-            <FlatList
-                data={filteredProducts}
-                renderItem={({ item }) => (
-                    <View style={styles.productCardWrapper}>
-                        <ProductCard
-                            product={item}
-                            onPress={() => router.push(`/product/${item.id}`)}
-                        />
-                    </View>
-                )}
-                keyExtractor={(item) => item.id}
-                numColumns={2}
-                contentContainerStyle={styles.productList}
+            {/* Main Content */}
+            <ScrollView
                 showsVerticalScrollIndicator={false}
-                ListEmptyComponent={
+                contentContainerStyle={styles.scrollContent}
+            >
+                {/* Hero Section */}
+                <HeroSection onShopNow={() => setActiveCategory('All')} />
+
+                {/* Weekly Selection */}
+                <WeeklySelection
+                    products={products}
+                    onProductPress={(id) => router.push(`/product/${id}`)}
+                />
+
+                {/* Category Navigation */}
+                <View style={styles.categorySection}>
+                    <CategoryNav
+                        activeCategory={activeCategory}
+                        onCategoryChange={setActiveCategory}
+                        categories={categories}
+                    />
+                </View>
+
+                {/* Section Title */}
+                <View style={styles.sectionHeader}>
+                    <Text style={styles.sectionTitle}>{getCategoryTitle()}</Text>
+                </View>
+
+                {/* Products Grid */}
+                <View style={styles.productGrid}>
+                    {filteredProducts.map((product) => (
+                        <View key={product.id} style={styles.productCardWrapper}>
+                            <ProductCard
+                                product={product}
+                                onPress={() => router.push(`/product/${product.id}`)}
+                            />
+                        </View>
+                    ))}
+                </View>
+
+                {filteredProducts.length === 0 && (
                     <View style={styles.emptyContainer}>
-                        <Search size={48} color="#D1D5DB" />
+                        <Search size={48} color={COLORS.border} />
                         <Text style={styles.emptyTitle}>No products found</Text>
                         <Text style={styles.emptySubtitle}>
                             Try adjusting your search or category filter
                         </Text>
                     </View>
-                }
-            />
+                )}
+
+                {/* Bulk Orders CTA */}
+                <BulkOrdersCTA />
+            </ScrollView>
         </View>
     );
 }
@@ -169,25 +179,21 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: COLORS.cream,
+        backgroundColor: COLORS.background,
     },
     header: {
-        backgroundColor: '#FFFFFF',
-        borderBottomLeftRadius: 24,
-        borderBottomRightRadius: 24,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.06,
-        shadowRadius: 8,
-        elevation: 4,
+        backgroundColor: COLORS.card,
+        borderBottomLeftRadius: RADIUS.xl,
+        borderBottomRightRadius: RADIUS.xl,
+        ...SHADOWS.soft,
     },
     headerContent: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        paddingHorizontal: 16,
-        paddingTop: 12,
-        paddingBottom: 8,
+        paddingHorizontal: SPACING.lg,
+        paddingTop: SPACING.md,
+        paddingBottom: SPACING.sm,
     },
     locationContainer: {
         flex: 1,
@@ -198,15 +204,15 @@ const styles = StyleSheet.create({
         marginBottom: 2,
     },
     locationLabelText: {
+        fontFamily: FONTS.body,
         fontSize: 11,
-        color: COLORS.slate,
-        fontWeight: '500',
+        color: COLORS.textSecondary,
         marginLeft: 4,
     },
     locationText: {
+        fontFamily: FONTS.bodyBold,
         fontSize: 14,
-        fontWeight: '700',
-        color: COLORS.charcoal,
+        color: COLORS.text,
         maxWidth: 200,
     },
     headerRight: {
@@ -216,85 +222,75 @@ const styles = StyleSheet.create({
     },
     cartButton: {
         padding: 10,
-        backgroundColor: COLORS.cream,
-        borderRadius: 12,
+        backgroundColor: COLORS.background,
+        borderRadius: RADIUS.md,
         position: 'relative',
     },
     cartBadge: {
         position: 'absolute',
         top: 2,
         right: 2,
-        backgroundColor: COLORS.coral,
+        backgroundColor: COLORS.primary,
         borderRadius: 10,
         minWidth: 18,
         height: 18,
         alignItems: 'center',
         justifyContent: 'center',
         borderWidth: 2,
-        borderColor: '#FFFFFF',
+        borderColor: COLORS.card,
     },
     cartBadgeText: {
+        fontFamily: FONTS.bodyBold,
         fontSize: 10,
-        fontWeight: '700',
-        color: '#FFFFFF',
-    },
-    avatarContainer: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        borderWidth: 2,
-        borderColor: '#FFFFFF',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 3,
-        overflow: 'hidden',
-    },
-    avatar: {
-        width: '100%',
-        height: '100%',
+        color: COLORS.white,
     },
     searchContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: COLORS.cream,
-        marginHorizontal: 16,
-        marginVertical: 12,
-        paddingHorizontal: 16,
+        backgroundColor: COLORS.background,
+        marginHorizontal: SPACING.lg,
+        marginVertical: SPACING.md,
+        paddingHorizontal: SPACING.lg,
         paddingVertical: 14,
-        borderRadius: 16,
+        borderRadius: RADIUS.lg,
         borderWidth: 1,
-        borderColor: '#E5E7EB',
+        borderColor: COLORS.border,
     },
     searchInput: {
         flex: 1,
-        marginLeft: 12,
-        marginRight: 8,
+        marginLeft: SPACING.md,
+        marginRight: SPACING.sm,
+        fontFamily: FONTS.body,
         fontSize: 15,
-        color: COLORS.charcoal,
+        color: COLORS.text,
     },
-    micButton: {
+    filterButton: {
         padding: 4,
     },
+    scrollContent: {
+        paddingBottom: 120,
+    },
+    categorySection: {
+        marginTop: SPACING['2xl'],
+    },
     sectionHeader: {
-        paddingHorizontal: 20,
-        paddingTop: 20,
-        paddingBottom: 12,
+        paddingHorizontal: SPACING.xl,
+        paddingTop: SPACING.xl,
+        paddingBottom: SPACING.md,
     },
     sectionTitle: {
+        fontFamily: FONTS.displayBold,
         fontSize: 22,
-        fontWeight: '700',
-        color: COLORS.charcoal,
+        color: COLORS.text,
         letterSpacing: -0.5,
     },
-    productList: {
-        padding: 8,
-        paddingBottom: 120, // Extra padding for floating nav
+    productGrid: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        paddingHorizontal: SPACING.sm,
     },
     productCardWrapper: {
-        flex: 1,
-        maxWidth: '50%',
+        width: '50%',
     },
     emptyContainer: {
         flex: 1,
@@ -304,15 +300,17 @@ const styles = StyleSheet.create({
         opacity: 0.7,
     },
     emptyTitle: {
+        fontFamily: FONTS.bodyBold,
         fontSize: 18,
-        fontWeight: '600',
-        color: COLORS.slate,
-        marginTop: 16,
-        marginBottom: 8,
+        color: COLORS.textSecondary,
+        marginTop: SPACING.lg,
+        marginBottom: SPACING.sm,
     },
     emptySubtitle: {
+        fontFamily: FONTS.body,
         fontSize: 14,
-        color: '#9CA3AF',
+        color: COLORS.textLight,
         textAlign: 'center',
     },
 });
+

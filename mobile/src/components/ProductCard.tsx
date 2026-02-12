@@ -11,17 +11,7 @@ import { Product } from '../contexts/ProductsContext';
 import { getProductImage } from '../data/local-images';
 import { useCart } from '../contexts/CartContext';
 import { LinearGradient } from 'expo-linear-gradient';
-
-// Premium colors - Coral/Teal palette
-const COLORS = {
-    coral: '#D84A4A',
-    coralLight: '#E57373',
-    teal: '#4A9B9B',
-    charcoal: '#2D3436',
-    slate: '#636E72',
-    cream: '#FFF8F0',
-    success: '#27AE60',
-};
+import { COLORS, FONTS, RADIUS, SHADOWS } from '../lib/theme';
 
 interface ProductCardProps {
     product: Product;
@@ -134,7 +124,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onPress }) => {
                 {/* Size Selector if variations exist */}
                 {product.variations && product.variations.length > 0 && (
                     <View style={styles.sizeContainer}>
-                        {product.variations.slice(0, 3).map((variant) => (
+                        {product.variations.map((variant) => (
                             <TouchableOpacity
                                 key={variant.size}
                                 style={[
@@ -248,7 +238,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 10,
         right: 10,
-        backgroundColor: COLORS.coral,
+        backgroundColor: COLORS.primary,
         paddingHorizontal: 10,
         paddingVertical: 5,
         borderRadius: 10,
@@ -283,13 +273,13 @@ const styles = StyleSheet.create({
     productName: {
         fontSize: 16,
         fontWeight: '700',
-        color: COLORS.charcoal,
+        color: COLORS.text,
         marginBottom: 4,
         letterSpacing: -0.3,
     },
     description: {
         fontSize: 12,
-        color: COLORS.slate,
+        color: COLORS.textSecondary,
         lineHeight: 17,
         marginBottom: 10,
     },
@@ -303,17 +293,17 @@ const styles = StyleSheet.create({
     price: {
         fontSize: 22,
         fontWeight: '800',
-        color: COLORS.charcoal,
+        color: COLORS.text,
     },
     unit: {
         fontSize: 13,
-        color: COLORS.slate,
+        color: COLORS.textSecondary,
         marginLeft: 2,
     },
     priceOnRequest: {
         fontSize: 14,
         fontWeight: '600',
-        color: COLORS.coral,
+        color: COLORS.primary,
     },
     stockWarning: {
         fontSize: 11,
@@ -332,13 +322,13 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         paddingVertical: 6,
         borderRadius: 10,
-        backgroundColor: COLORS.cream,
+        backgroundColor: COLORS.background,
         borderWidth: 1,
         borderColor: '#E5E7EB',
     },
     sizeButtonActive: {
-        backgroundColor: COLORS.coral,
-        borderColor: COLORS.coral,
+        backgroundColor: COLORS.primary,
+        borderColor: COLORS.primary,
     },
     sizeText: {
         fontSize: 11,
@@ -353,13 +343,13 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: COLORS.coral,
+        backgroundColor: COLORS.primary,
         paddingVertical: 14,
         marginHorizontal: 14,
         marginBottom: 14,
         borderRadius: 16,
         gap: 6,
-        shadowColor: COLORS.coral,
+        shadowColor: COLORS.primary,
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.25,
         shadowRadius: 8,

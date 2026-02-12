@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import {
     View,
     Text,
@@ -8,14 +8,24 @@ import {
     Alert,
     StyleSheet,
     ActivityIndicator,
+    Dimensions,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ShoppingCart, Minus, Plus, ChevronLeft } from 'lucide-react-native';
+import { ShoppingBag, Minus, Plus, ChevronLeft, Lock, Eye } from 'lucide-react-native';
 import { useProducts } from '../../src/contexts/ProductsContext';
 import { getProductImage } from '../../src/data/local-images';
 import { useCart } from '../../src/contexts/CartContext';
+import { COLORS, FONTS, RADIUS, SHADOWS, SPACING } from '../../src/lib/theme';
+import WeightSelector from '../../src/components/WeightSelector';
+import ReviewsCarousel from '../../src/components/ReviewsCarousel';
+import ChefNote from '../../src/components/ChefNote';
+import ProductInfoCard from '../../src/components/ProductInfoCard';
+import GlazingSelector from '../../src/components/GlazingSelector';
+
+const { width } = Dimensions.get('window');
 
 export default function ProductDetailScreen() {
     const { id } = useLocalSearchParams<{ id: string }>();
@@ -25,6 +35,7 @@ export default function ProductDetailScreen() {
     const insets = useSafeAreaInsets();
     const [quantity, setQuantity] = useState(1);
     const [selectedVariation, setSelectedVariation] = useState<string | null>(null);
+    const [selectedGlazing, setSelectedGlazing] = useState<number>(50);
 
     // Find product from ProductsContext (backend data)
     const product = useMemo(() => {
@@ -39,12 +50,46 @@ export default function ProductDetailScreen() {
     }, [product]);
 
     const getCurrentPrice = () => {
-        if (selectedVariation && product?.variations) {
-            const variation = product.variations.find(v => v.size === selectedVariation);
-            return variation?.price || product.price;
+        // Glazing logic
+        if (product) {
+            const isSeafood = ['Fish', 'Prawns', 'Seafood'].includes(product.category);
+            let glazingPrices = product.glazingPrices;
+            let basePrice = product.price;
+
+            if (selectedVariation && product.variations) {
+                const variation = product.variations.find(v => v.size === selectedVariation);
+                if (variation) {
+                    basePrice = variation.price;
+                    if (variation.glazingPrices) {
+                        glazingPrices = variation.glazingPrices;
+                    }
+                }
+            }
+
+            if (isSeafood && glazingPrices) {
+                if (selectedGlazing === 20 && glazingPrices.glazing20) return glazingPrices.glazing20;
+                if (selectedGlazing === 30 && glazingPrices.glazing30) return glazingPrices.glazing30;
+                if (selectedGlazing === 50 && glazingPrices.glazing50) return glazingPrices.glazing50;
+            }
+
+            return basePrice;
         }
-        return product?.price || 0;
+        return 0;
     };
+
+    // Prepare weight options for the WeightSelector
+    const weightOptions = useMemo(() => {
+        if (!product?.variations || product.variations.length === 0) {
+            return [
+                { size: product?.unit || '1kg', label: 'Standard', price: product?.price || 0 },
+            ];
+        }
+        return product.variations.map((v) => ({
+            size: v.size,
+            label: v.size,
+            price: v.price,
+        }));
+    }, [product]);
 
     const handleAddToCart = () => {
         if (!product) return;
@@ -69,7 +114,10 @@ export default function ProductDetailScreen() {
 
         // Add to cart multiple times for quantity
         for (let i = 0; i < quantity; i++) {
-            addToCart(cartProduct, selectedVariation || undefined);
+            const isSeafood = ['Fish', 'Prawns', 'Seafood'].includes(product.category);
+            // Only pass glazing if it is seafood and we have prices
+            const glazing = isSeafood ? selectedGlazing : undefined;
+            addToCart(cartProduct, selectedVariation || undefined, glazing);
         }
 
         Alert.alert(
@@ -89,7 +137,7 @@ export default function ProductDetailScreen() {
     if (loading) {
         return (
             <View style={styles.errorContainer}>
-                <ActivityIndicator size="large" color="#bf002d" />
+                <ActivityIndicator size="large" color={COLORS.primary} />
                 <Text style={styles.loadingText}>Loading product...</Text>
             </View>
         );
@@ -112,42 +160,61 @@ export default function ProductDetailScreen() {
         );
     }
 
-    // Image handling: prefer backend URL, fallback to local image
+    // Image handling
     const localImage = getProductImage(product.imageKey);
     const isPlaceholderUrl = product.imageUrl?.includes('placeholder.com') || product.imageUrl?.includes('via.placeholder');
     const hasRemoteImage = product.imageUrl && product.imageUrl.startsWith('http') && !isPlaceholderUrl;
-
-    const productImage = hasRemoteImage
-        ? { uri: product.imageUrl }
-        : localImage;
+    const productImage = hasRemoteImage ? { uri: product.imageUrl } : localImage;
     const currentPrice = getCurrentPrice();
+    const totalPrice = currentPrice * quantity;
 
     return (
         <View style={styles.container}>
             <StatusBar style="light" />
 
-            {/* Custom Header with Safe Area handling */}
-            <View style={[styles.header, { paddingTop: insets.top + 10 }]}>
+            {/* Premium Floating Header */}
+            <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
                 <TouchableOpacity
                     onPress={() => router.back()}
                     style={styles.headerBackButton}
                 >
-                    <ChevronLeft size={24} color="#FFFFFF" />
+                    <ChevronLeft size={24} color={COLORS.text} />
                 </TouchableOpacity>
-                <Text style={styles.headerTitle} numberOfLines={1}>
-                    {product.name}
-                </Text>
-                <View style={styles.headerSpacer} />
+
+                <View style={styles.headerCenter}>
+                    <Text style={styles.headerPrice}>₹{totalPrice.toLocaleString()}</Text>
+                </View>
+
+                <TouchableOpacity style={styles.secureButton}>
+                    <Lock size={14} color={COLORS.white} />
+                    <Text style={styles.secureText}>SECURE</Text>
+                </TouchableOpacity>
             </View>
 
             <ScrollView showsVerticalScrollIndicator={false}>
-                {/* Product Image */}
+                {/* Hero Image Section */}
                 <View style={styles.imageContainer}>
                     <Image
                         source={productImage}
                         style={styles.image}
                         resizeMode="cover"
                     />
+                    <LinearGradient
+                        colors={['transparent', 'rgba(0,0,0,0.4)']}
+                        style={styles.imageGradient}
+                    />
+
+                    {/* Premium Badge */}
+                    <View style={styles.premiumBadge}>
+                        <Text style={styles.premiumBadgeText}>PREMIUM CATCH</Text>
+                    </View>
+
+                    {/* Quick View Button */}
+                    <TouchableOpacity style={styles.quickViewButton}>
+                        <Eye size={20} color={COLORS.white} />
+                    </TouchableOpacity>
+
+                    {/* Freshness Badge */}
                     <View style={styles.freshnessBadge}>
                         <Text style={styles.freshnessText}>{product.freshness}</Text>
                     </View>
@@ -171,74 +238,100 @@ export default function ProductDetailScreen() {
                         <Text style={styles.unit}>per {product.unit}</Text>
                     </View>
 
-                    {/* Variations */}
-                    {product.variations && product.variations.length > 0 && (
-                        <View style={styles.variationsContainer}>
+                    {/* Weight Selector */}
+                    {weightOptions.length > 1 && (
+                        <View style={styles.sectionContainer}>
                             <Text style={styles.sectionTitle}>Select Size</Text>
-                            <View style={styles.variationsList}>
-                                {product.variations.map((variation) => (
-                                    <TouchableOpacity
-                                        key={variation.size}
-                                        style={[
-                                            styles.variationButton,
-                                            selectedVariation === variation.size && styles.variationButtonActive,
-                                        ]}
-                                        onPress={() => setSelectedVariation(variation.size)}
-                                    >
-                                        <Text
-                                            style={[
-                                                styles.variationText,
-                                                selectedVariation === variation.size && styles.variationTextActive,
-                                            ]}
-                                        >
-                                            {variation.size}
-                                        </Text>
-                                    </TouchableOpacity>
-                                ))}
-                            </View>
+                            <WeightSelector
+                                options={weightOptions}
+                                selectedSize={selectedVariation || weightOptions[0].size}
+                                onSelect={setSelectedVariation}
+                            />
                         </View>
                     )}
 
+                    {/* Glazing Selector */}
+                    {product && ['Fish', 'Prawns', 'Seafood'].includes(product.category) && (
+                        (selectedVariation ?
+                            product.variations?.find(v => v.size === selectedVariation)?.glazingPrices
+                            : product.glazingPrices) || product.glazingPrices
+                    ) && (
+                            <GlazingSelector
+                                selectedGlazing={selectedGlazing}
+                                onSelect={setSelectedGlazing}
+                                prices={
+                                    (selectedVariation ?
+                                        product.variations?.find(v => v.size === selectedVariation)?.glazingPrices
+                                        : product.glazingPrices) || product.glazingPrices
+                                }
+                            />
+                        )}
+
                     {/* Quantity Selector */}
-                    <View style={styles.quantityContainer}>
+                    <View style={styles.sectionContainer}>
                         <Text style={styles.sectionTitle}>Quantity</Text>
                         <View style={styles.quantityRow}>
                             <TouchableOpacity
                                 style={styles.quantityButton}
                                 onPress={() => setQuantity(Math.max(1, quantity - 1))}
                             >
-                                <Minus size={20} color="#4B5563" />
+                                <Minus size={20} color={COLORS.textSecondary} />
                             </TouchableOpacity>
                             <Text style={styles.quantityText}>{quantity}</Text>
                             <TouchableOpacity
                                 style={styles.quantityButton}
                                 onPress={() => setQuantity(quantity + 1)}
                             >
-                                <Plus size={20} color="#4B5563" />
+                                <Plus size={20} color={COLORS.textSecondary} />
                             </TouchableOpacity>
                         </View>
                     </View>
 
+                    {/* Product Info Cards */}
+                    <View style={styles.infoCardsRow}>
+                        <ProductInfoCard type="origin" label="ORIGIN" value="Wild Caught" />
+                        <ProductInfoCard type="protein" label="PROTEIN" value="22g/100g" />
+                    </View>
+                    {product.piecesPerKg && (
+                        <View style={styles.piecesPerKgContainer}>
+                            <Text style={styles.piecesPerKgLabel}>PIECES PER KG</Text>
+                            <Text style={styles.piecesPerKgValue}>~{product.piecesPerKg} pcs</Text>
+                        </View>
+                    )}
+
                     {/* Description */}
-                    <View style={styles.descriptionContainer}>
+                    <View style={styles.sectionContainer}>
                         <Text style={styles.sectionTitle}>Description</Text>
                         <Text style={styles.description}>{product.description}</Text>
                     </View>
                 </View>
+
+                {/* Reviews Carousel */}
+                <ReviewsCarousel />
+
+                {/* Chef's Note */}
+                <ChefNote />
+
+                {/* Bottom spacing */}
+                <View style={{ height: 120 }} />
             </ScrollView>
 
-            {/* Add to Cart Button */}
-            <View style={styles.footer}>
-                <TouchableOpacity
-                    style={styles.addToCartButton}
-                    onPress={handleAddToCart}
-                    activeOpacity={0.8}
-                >
-                    <ShoppingCart size={24} color="#FFFFFF" />
-                    <Text style={styles.addToCartText}>
-                        Add to Cart {currentPrice > 0 ? `- ₹${(currentPrice * quantity).toFixed(2)}` : ''}
-                    </Text>
-                </TouchableOpacity>
+            {/* Floating Add to Cart Bar */}
+            <View style={[styles.footer, { paddingBottom: insets.bottom + 16 }]}>
+                <View style={styles.footerContent}>
+                    <View style={styles.footerPrice}>
+                        <Text style={styles.footerPriceLabel}>Total</Text>
+                        <Text style={styles.footerPriceValue}>₹{totalPrice.toLocaleString()}</Text>
+                    </View>
+                    <TouchableOpacity
+                        style={styles.addToCartButton}
+                        onPress={handleAddToCart}
+                        activeOpacity={0.8}
+                    >
+                        <ShoppingBag size={20} color={COLORS.white} />
+                        <Text style={styles.addToCartText}>Add to Cart</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
         </View>
     );
@@ -247,186 +340,248 @@ export default function ProductDetailScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#FFFFFF',
+        backgroundColor: COLORS.background,
     },
     header: {
-        backgroundColor: '#bf002d',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 100,
         flexDirection: 'row',
         alignItems: 'center',
-        paddingHorizontal: 12,
-        paddingBottom: 14,
+        justifyContent: 'space-between',
+        paddingHorizontal: SPACING.lg,
+        paddingBottom: SPACING.md,
+        backgroundColor: 'rgba(255,255,255,0.95)',
+        ...SHADOWS.soft,
     },
     headerBackButton: {
         width: 40,
         height: 40,
-        borderRadius: 20,
+        borderRadius: RADIUS.full,
+        backgroundColor: COLORS.card,
         alignItems: 'center',
         justifyContent: 'center',
+        ...SHADOWS.soft,
     },
-    headerTitle: {
-        flex: 1,
+    headerCenter: {
+        alignItems: 'center',
+    },
+    headerPrice: {
+        fontFamily: FONTS.displayBold,
         fontSize: 18,
-        fontWeight: '600',
-        color: '#FFFFFF',
-        marginLeft: 8,
+        color: COLORS.text,
     },
-    headerSpacer: {
-        width: 40,
+    secureButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: COLORS.success,
+        paddingHorizontal: 10,
+        paddingVertical: 6,
+        borderRadius: RADIUS.full,
+        gap: 4,
+    },
+    secureText: {
+        fontFamily: FONTS.bodyBold,
+        fontSize: 10,
+        color: COLORS.white,
+        letterSpacing: 0.5,
     },
     errorContainer: {
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#FFFFFF',
-        paddingHorizontal: 24,
+        backgroundColor: COLORS.background,
+        paddingHorizontal: SPACING['2xl'],
     },
     errorTitle: {
+        fontFamily: FONTS.displayBold,
         fontSize: 20,
-        fontWeight: '700',
-        color: '#EF4444',
-        marginBottom: 8,
+        color: COLORS.error,
+        marginBottom: SPACING.sm,
     },
     errorSubtitle: {
+        fontFamily: FONTS.body,
         fontSize: 15,
-        color: '#6B7280',
+        color: COLORS.textSecondary,
         textAlign: 'center',
-        marginBottom: 24,
+        marginBottom: SPACING['2xl'],
     },
     loadingText: {
+        fontFamily: FONTS.body,
         fontSize: 16,
-        color: '#6B7280',
-        marginTop: 16,
+        color: COLORS.textSecondary,
+        marginTop: SPACING.lg,
     },
     backButton: {
-        backgroundColor: '#bf002d',
-        paddingHorizontal: 24,
-        paddingVertical: 12,
-        borderRadius: 12,
+        backgroundColor: COLORS.primary,
+        paddingHorizontal: SPACING['2xl'],
+        paddingVertical: SPACING.md,
+        borderRadius: RADIUS.md,
     },
     backButtonText: {
-        color: '#FFFFFF',
-        fontWeight: '600',
+        fontFamily: FONTS.bodyBold,
+        color: COLORS.white,
     },
     imageContainer: {
-        height: 280,
-        backgroundColor: '#F5F5F5',
+        height: 340,
+        backgroundColor: COLORS.card,
         position: 'relative',
     },
     image: {
         width: '100%',
         height: '100%',
     },
+    imageGradient: {
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        bottom: 0,
+        height: 150,
+    },
+    premiumBadge: {
+        position: 'absolute',
+        top: 100,
+        left: SPACING.lg,
+        backgroundColor: COLORS.primary,
+        paddingHorizontal: 14,
+        paddingVertical: 8,
+        borderRadius: RADIUS.full,
+    },
+    premiumBadgeText: {
+        fontFamily: FONTS.bodyBold,
+        fontSize: 11,
+        color: COLORS.white,
+        letterSpacing: 1,
+    },
+    quickViewButton: {
+        position: 'absolute',
+        top: 100,
+        right: SPACING.lg,
+        width: 44,
+        height: 44,
+        borderRadius: RADIUS.full,
+        backgroundColor: 'rgba(0,0,0,0.3)',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
     freshnessBadge: {
         position: 'absolute',
-        top: 16,
-        left: 16,
+        bottom: SPACING.lg,
+        left: SPACING.lg,
         backgroundColor: 'rgba(255,255,255,0.95)',
-        paddingHorizontal: 12,
-        paddingVertical: 6,
-        borderRadius: 12,
+        paddingHorizontal: 14,
+        paddingVertical: 8,
+        borderRadius: RADIUS.md,
+        ...SHADOWS.soft,
     },
     freshnessText: {
+        fontFamily: FONTS.bodyBold,
         fontSize: 12,
-        fontWeight: '600',
-        color: '#374151',
+        color: COLORS.success,
     },
     infoContainer: {
-        padding: 24,
-        paddingBottom: 120,
+        padding: SPACING['2xl'],
+        paddingBottom: 0,
     },
     category: {
-        fontSize: 14,
-        fontWeight: '600',
-        color: '#bf002d',
-        marginBottom: 4,
+        fontFamily: FONTS.bodyBold,
+        fontSize: 13,
+        color: COLORS.primary,
+        textTransform: 'uppercase',
+        letterSpacing: 1,
+        marginBottom: SPACING.xs,
     },
     productName: {
-        fontSize: 26,
-        fontWeight: '700',
-        color: '#1F2937',
-        marginBottom: 12,
+        fontFamily: FONTS.displayBold,
+        fontSize: 28,
+        color: COLORS.text,
+        marginBottom: SPACING.md,
     },
     priceRow: {
         flexDirection: 'row',
         alignItems: 'baseline',
-        marginBottom: 24,
+        marginBottom: SPACING['2xl'],
     },
     price: {
+        fontFamily: FONTS.displayBold,
         fontSize: 32,
-        fontWeight: '700',
-        color: '#bf002d',
+        color: COLORS.primary,
     },
     priceOnRequest: {
+        fontFamily: FONTS.bodyBold,
         fontSize: 18,
-        fontWeight: '600',
-        color: '#1F2937',
+        color: COLORS.text,
     },
     unit: {
+        fontFamily: FONTS.body,
         fontSize: 14,
-        color: '#9CA3AF',
-        marginLeft: 8,
+        color: COLORS.textSecondary,
+        marginLeft: SPACING.sm,
     },
-    variationsContainer: {
-        marginBottom: 24,
+    sectionContainer: {
+        marginBottom: SPACING['2xl'],
     },
     sectionTitle: {
+        fontFamily: FONTS.bodyBold,
         fontSize: 16,
-        fontWeight: '600',
-        color: '#1F2937',
-        marginBottom: 12,
+        color: COLORS.text,
+        marginBottom: SPACING.md,
     },
-    variationsList: {
+    infoCardsRow: {
         flexDirection: 'row',
-        flexWrap: 'wrap',
-        gap: 10,
+        gap: SPACING.md,
+        marginBottom: SPACING.md,
     },
-    variationButton: {
-        paddingHorizontal: 16,
+    piecesPerKgContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: COLORS.background,
+        borderRadius: RADIUS.lg,
+        borderWidth: 1,
+        borderColor: COLORS.border,
         paddingVertical: 10,
-        borderRadius: 10,
-        borderWidth: 2,
-        borderColor: '#E5E7EB',
-        backgroundColor: '#FFFFFF',
+        paddingHorizontal: 16,
+        marginBottom: SPACING['2xl'],
+        gap: SPACING.sm,
     },
-    variationButtonActive: {
-        borderColor: '#bf002d',
-        backgroundColor: '#FEF2F2',
+    piecesPerKgLabel: {
+        fontFamily: FONTS.bodyBold,
+        fontSize: 11,
+        color: COLORS.textSecondary,
+        letterSpacing: 1,
     },
-    variationText: {
-        fontSize: 14,
-        fontWeight: '500',
-        color: '#374151',
-    },
-    variationTextActive: {
-        color: '#bf002d',
-    },
-    quantityContainer: {
-        marginBottom: 24,
+    piecesPerKgValue: {
+        fontFamily: FONTS.displayBold,
+        fontSize: 16,
+        color: COLORS.primary,
     },
     quantityRow: {
         flexDirection: 'row',
         alignItems: 'center',
     },
     quantityButton: {
-        width: 44,
-        height: 44,
-        backgroundColor: '#F3F4F6',
-        borderRadius: 12,
+        width: 48,
+        height: 48,
+        backgroundColor: COLORS.card,
+        borderRadius: RADIUS.md,
+        borderWidth: 1,
+        borderColor: COLORS.border,
         alignItems: 'center',
         justifyContent: 'center',
     },
     quantityText: {
-        paddingHorizontal: 24,
-        fontSize: 20,
-        fontWeight: '600',
-        color: '#1F2937',
-    },
-    descriptionContainer: {
-        marginBottom: 24,
+        fontFamily: FONTS.displayMedium,
+        paddingHorizontal: SPACING['2xl'],
+        fontSize: 22,
+        color: COLORS.text,
     },
     description: {
+        fontFamily: FONTS.body,
         fontSize: 15,
-        color: '#6B7280',
+        color: COLORS.textSecondary,
         lineHeight: 24,
     },
     footer: {
@@ -434,29 +589,47 @@ const styles = StyleSheet.create({
         bottom: 0,
         left: 0,
         right: 0,
-        backgroundColor: '#FFFFFF',
-        paddingHorizontal: 24,
-        paddingVertical: 16,
-        borderTopWidth: 1,
-        borderTopColor: '#E5E7EB',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: -4 },
-        shadowOpacity: 0.1,
-        shadowRadius: 12,
-        elevation: 10,
+        backgroundColor: COLORS.card,
+        paddingHorizontal: SPACING.xl,
+        paddingTop: SPACING.lg,
+        borderTopLeftRadius: RADIUS['2xl'],
+        borderTopRightRadius: RADIUS['2xl'],
+        ...SHADOWS.premium,
+    },
+    footerContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: SPACING.lg,
+    },
+    footerPrice: {
+        flex: 1,
+    },
+    footerPriceLabel: {
+        fontFamily: FONTS.body,
+        fontSize: 12,
+        color: COLORS.textSecondary,
+        marginBottom: 2,
+    },
+    footerPriceValue: {
+        fontFamily: FONTS.displayBold,
+        fontSize: 24,
+        color: COLORS.text,
     },
     addToCartButton: {
+        flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#bf002d',
+        backgroundColor: COLORS.primary,
         paddingVertical: 16,
-        borderRadius: 16,
-        gap: 10,
+        borderRadius: RADIUS.lg,
+        gap: 8,
+        ...SHADOWS.button,
     },
     addToCartText: {
-        color: '#FFFFFF',
-        fontSize: 17,
-        fontWeight: '700',
+        fontFamily: FONTS.bodyBold,
+        color: COLORS.white,
+        fontSize: 16,
     },
 });
+

@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Platform } from 'react-native';
 import { Home, ShoppingBag, User } from 'lucide-react-native';
 import { useCart } from '../../src/contexts/CartContext';
 import { BlurView } from 'expo-blur';
+import { COLORS, FONTS, RADIUS, SHADOWS, SPACING } from '../../src/lib/theme';
 
 export default function TabLayout() {
     const { cartCount } = useCart();
@@ -10,8 +11,8 @@ export default function TabLayout() {
     return (
         <Tabs
             screenOptions={{
-                tabBarActiveTintColor: '#D84A4A', // coral
-                tabBarInactiveTintColor: '#636E72', // slate
+                tabBarActiveTintColor: COLORS.primary,
+                tabBarInactiveTintColor: COLORS.textSecondary,
                 tabBarStyle: styles.tabBar,
                 tabBarLabelStyle: styles.tabBarLabel,
                 tabBarItemStyle: styles.tabBarItem,
@@ -19,7 +20,7 @@ export default function TabLayout() {
                 tabBarBackground: () => (
                     Platform.OS === 'ios' ? (
                         <BlurView
-                            intensity={80}
+                            intensity={90}
                             style={StyleSheet.absoluteFill}
                             tint="light"
                         />
@@ -94,32 +95,28 @@ const styles = StyleSheet.create({
     tabBar: {
         position: 'absolute',
         bottom: 24,
-        left: 24,
-        right: 24,
-        height: 64,
-        borderRadius: 24,
-        backgroundColor: Platform.OS === 'ios' ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.95)',
+        left: 20,
+        right: 20,
+        height: 68,
+        borderRadius: RADIUS['2xl'],
+        backgroundColor: Platform.OS === 'ios' ? 'rgba(255,255,255,0.85)' : COLORS.card,
         borderTopWidth: 0,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.12,
-        shadowRadius: 16,
-        elevation: 12,
         borderWidth: 1,
-        borderColor: 'rgba(255,255,255,0.2)',
+        borderColor: 'rgba(255,255,255,0.3)',
         paddingBottom: 0,
+        ...SHADOWS.floating,
     },
     androidBackground: {
-        backgroundColor: 'rgba(255,255,255,0.95)',
-        borderRadius: 24,
+        backgroundColor: COLORS.card,
+        borderRadius: RADIUS['2xl'],
     },
     tabBarLabel: {
+        fontFamily: FONTS.bodyBold,
         fontSize: 10,
-        fontWeight: '500',
-        marginTop: 2,
+        marginTop: 4,
     },
     tabBarItem: {
-        paddingTop: 8,
+        paddingTop: 10,
     },
     iconContainer: {
         alignItems: 'center',
@@ -128,29 +125,29 @@ const styles = StyleSheet.create({
     },
     activeIndicator: {
         position: 'absolute',
-        top: -12,
-        width: 40,
-        height: 3,
-        backgroundColor: '#D84A4A', // coral
-        borderBottomLeftRadius: 4,
-        borderBottomRightRadius: 4,
+        top: -14,
+        width: 36,
+        height: 4,
+        backgroundColor: COLORS.primary,
+        borderRadius: RADIUS.full,
     },
     badge: {
         position: 'absolute',
         top: -6,
         right: -10,
-        backgroundColor: '#E57373', // coralLight
-        borderRadius: 10,
+        backgroundColor: COLORS.primary,
+        borderRadius: RADIUS.full,
         minWidth: 18,
         height: 18,
         alignItems: 'center',
         justifyContent: 'center',
         borderWidth: 2,
-        borderColor: '#FFFFFF',
+        borderColor: COLORS.white,
     },
     badgeText: {
-        color: '#FFFFFF',
+        fontFamily: FONTS.bodyBold,
+        color: COLORS.white,
         fontSize: 10,
-        fontWeight: '700',
     },
 });
+

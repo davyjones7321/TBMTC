@@ -186,6 +186,11 @@ export default function CartDrawer() {
                                                     Size: {item.variation}
                                                 </p>
                                             )}
+                                            {item.glazing && (
+                                                <p className="text-sm text-cyan-600">
+                                                    Glazing: {item.glazing}%
+                                                </p>
+                                            )}
                                             <p className="text-sm text-gray-500">
                                                 {'_id' in item.product
                                                     ? `${item.product.unitValue || 1} ${item.product.unit || 'piece'}`
@@ -295,8 +300,8 @@ export default function CartDrawer() {
                                     closeCart();
                                 }}
                                 className={`btn w-full justify-center ${meetsMinimumOrder
-                                        ? 'btn-primary'
-                                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                    ? 'btn-primary'
+                                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                                     }`}
                             >
                                 Proceed to Checkout

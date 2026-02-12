@@ -176,6 +176,9 @@ const OrderDetails: React.FC = () => {
                                                 {item.variation && (
                                                     <p className="text-sm text-gray-500">Size: {item.variation}</p>
                                                 )}
+                                                {item.glazing && (
+                                                    <p className="text-sm text-gray-500">Glazing: {item.glazing}%</p>
+                                                )}
                                                 <p className="text-sm text-gray-500">
                                                     Qty: {item.quantity} × ₹{item.price.toFixed(2)}
                                                 </p>

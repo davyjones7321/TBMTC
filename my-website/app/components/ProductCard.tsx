@@ -185,13 +185,13 @@ export default function ProductCard({ product }: ProductCardProps) {
                 {/* Variants */}
                 {hasVariants && (
                     <div className="flex flex-wrap gap-1 mb-3">
-                        {variants.slice(0, 4).map((variant) => (
+                        {variants.map((variant) => (
                             <button
                                 key={variant.size}
                                 onClick={() => setSelectedVariant(variant.size)}
                                 className={`px-2 py-1 text-xs rounded border transition-colors ${selectedVariant === variant.size
-                                        ? 'bg-cyan-600 text-white border-cyan-600'
-                                        : 'bg-white text-gray-600 border-gray-200 hover:border-cyan-600'
+                                    ? 'bg-cyan-600 text-white border-cyan-600'
+                                    : 'bg-white text-gray-600 border-gray-200 hover:border-cyan-600'
                                     }`}
                             >
                                 {variant.size}

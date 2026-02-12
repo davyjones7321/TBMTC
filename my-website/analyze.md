@@ -1,7 +1,7 @@
 # JHOM FOODS Website Analysis
 
 > **Document Created:** 2026-01-29 @ 17:44 IST  
-> **Last Updated:** 2026-02-09 @ 14:43 IST
+> **Last Updated:** 2026-02-12 @ 17:20 IST
 
 ---
 
@@ -333,6 +333,28 @@ The project uses a comprehensive CSS design system defined in `globals.css`:
 #### 📝 Notes
 - 
 ```
+
+---
+
+### 2026-02-12 @ 17:20 IST - Pieces per KG Feature
+
+#### ✨ Added
+- `product/[id]/page.tsx` - New "~X pieces per KG" pill badge next to the existing "per 1 kg" badge
+- Only shown when admin sets a `piecesPerKg` value for the product
+- Matches existing badge styling (gray-100 background, rounded-full)
+
+---
+
+### 2026-02-12 @ 16:30 IST - All Prawn Sizes Display
+
+#### 🔧 Modified
+- `ProductCard.tsx` - Removed `.slice(0, 4)` limit, now displays all 9 prawn size variants
+- `product/[id]/page.tsx` - Added full size/variant selector with dynamic pricing, variant-aware add-to-cart
+
+#### 📝 Notes
+- All 9 prawn sizes (6/8, 8/12, 13/15, 16/20, 21/25, 31/40, 41/50, 51/60, 61/70) now visible
+- Prices update dynamically based on selected size (connected to admin panel)
+- No backend changes needed — data was already available
 
 ---
 

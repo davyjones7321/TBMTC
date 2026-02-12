@@ -33,6 +33,7 @@ export interface Product {
   cost?: number;
   unit: 'piece' | 'kg' | 'g' | 'l' | 'ml';
   unitValue: number;
+  piecesPerKg?: number;
   category: {
     _id: string;
     name: string;
@@ -48,12 +49,22 @@ export interface Product {
     lowStockThreshold: number;
     trackInventory: boolean;
   };
+  glazingPrices?: {
+    glazing20?: number;
+    glazing30?: number;
+    glazing50?: number;
+  };
   variants: Array<{
     size: string;
     price: number;
     stock: number;
     sku: string;
     _id?: string;
+    glazingPrices?: {
+      glazing20?: number;
+      glazing30?: number;
+      glazing50?: number;
+    };
   }>;
   specifications: Array<{
     name: string;
@@ -125,6 +136,7 @@ export interface CartItem {
   quantity: number;
   variation?: string; // For variant products (e.g., "6/8", "1kg")
   price?: number; // Price at time of adding (for variants)
+  glazing?: number; // Glazing percentage (20, 30, 50)
 }
 
 export interface CartState {

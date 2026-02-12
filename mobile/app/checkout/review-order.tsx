@@ -162,6 +162,9 @@ export default function ReviewOrderScreen() {
                                     {item.variation && (
                                         <Text style={styles.itemVariation}>Size: {item.variation}</Text>
                                     )}
+                                    {item.glazing && (
+                                        <Text style={[styles.itemVariation, { color: COLORS.coral }]}>Glazing: {item.glazing}%</Text>
+                                    )}
                                     <View style={styles.itemPriceRow}>
                                         <Text style={styles.itemQuantity}>Qty: {item.quantity}</Text>
                                         {item.price === 0 ? (

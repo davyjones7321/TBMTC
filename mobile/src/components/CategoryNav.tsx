@@ -1,13 +1,6 @@
 import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
-
-// Premium colors - Coral/Teal palette
-const COLORS = {
-    coral: '#D84A4A',
-    coralLight: '#E57373',
-    charcoal: '#2D3436',
-    cream: '#FFF8F0',
-};
+import { COLORS, FONTS, RADIUS, SHADOWS, SPACING } from '../lib/theme';
 
 // Category icons as emojis (matching jhom-foods design)
 const CATEGORY_ICONS: Record<string, string> = {
@@ -72,11 +65,11 @@ export default function CategoryNav({
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: COLORS.cream,
-        paddingVertical: 16,
+        backgroundColor: COLORS.background,
+        paddingVertical: SPACING.lg,
     },
     scrollContent: {
-        paddingHorizontal: 16,
+        paddingHorizontal: SPACING.lg,
         gap: 10,
     },
     categoryButton: {
@@ -84,33 +77,30 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: 18,
         paddingVertical: 12,
-        borderRadius: 24,
-        backgroundColor: '#FFFFFF',
+        borderRadius: RADIUS.full,
+        backgroundColor: COLORS.card,
         borderWidth: 1,
-        borderColor: '#E5E7EB',
+        borderColor: COLORS.border,
         gap: 8,
         marginRight: 4,
     },
     categoryButtonActive: {
-        backgroundColor: COLORS.coral,
-        borderColor: COLORS.coral,
-        shadowColor: COLORS.coral,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.25,
-        shadowRadius: 8,
-        elevation: 6,
+        backgroundColor: COLORS.primary,
+        borderColor: COLORS.primary,
+        ...SHADOWS.premium,
         transform: [{ scale: 1.02 }],
     },
     categoryIcon: {
         fontSize: 18,
     },
     categoryText: {
+        fontFamily: FONTS.body,
         fontSize: 15,
-        fontWeight: '500',
-        color: COLORS.charcoal,
+        color: COLORS.text,
     },
     categoryTextActive: {
-        color: '#FFFFFF',
-        fontWeight: '600',
+        fontFamily: FONTS.bodyBold,
+        color: COLORS.white,
     },
 });
+

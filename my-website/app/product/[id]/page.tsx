@@ -7,6 +7,7 @@ import { use, useState } from 'react';
 import { useProduct, useProductsByCategory } from '@/app/hooks/useProducts';
 import { useCart } from '@/app/context/CartContext';
 import ProductCard from '@/app/components/ProductCard';
+import GlazingSelector from '@/app/components/GlazingSelector';
 
 interface Props {
     params: Promise<{ id: string }>;
@@ -18,6 +19,8 @@ export default function ProductPage({ params }: Props) {
     const { addToCart } = useCart();
     const [quantity, setQuantity] = useState(1);
     const [imageError, setImageError] = useState(false);
+    const [selectedVariant, setSelectedVariant] = useState<string | null>(null);
+    const [selectedGlazing, setSelectedGlazing] = useState<number>(50);
 
     // Fetch related products only when we have a product
     const categoryName = product?.category?.name || '';
@@ -27,6 +30,36 @@ export default function ProductPage({ params }: Props) {
     const relatedProducts = categoryProducts
         .filter(p => p._id !== id)
         .slice(0, 4);
+
+    // Variant helpers
+    const variants = product?.variants || [];
+    const hasVariants = variants.length > 0;
+
+    // Auto-select first variant if not selected
+    const activeVariant = selectedVariant || (hasVariants ? variants[0].size : null);
+
+    // Glazing Logic
+    const activeVariantObj = variants.find(v => v.size === activeVariant);
+    // Use variant specific glazing prices if available (though currently schema puts them on product too? Need to check priority. Admin puts them on variants too.)
+    const glazingPrices = activeVariantObj?.glazingPrices || product?.glazingPrices;
+
+    // Determine if seafood
+    const isSeafood = categoryName.toLowerCase().includes('seafood') ||
+        categoryName.toLowerCase().includes('fish') ||
+        categoryName.toLowerCase().includes('prawns');
+
+    const getCurrentPrice = () => {
+        if (isSeafood && glazingPrices) {
+            if (selectedGlazing === 20 && glazingPrices.glazing20) return glazingPrices.glazing20;
+            if (selectedGlazing === 30 && glazingPrices.glazing30) return glazingPrices.glazing30;
+            if (selectedGlazing === 50 && glazingPrices.glazing50) return glazingPrices.glazing50;
+        }
+
+        if (hasVariants && activeVariant) {
+            return activeVariantObj?.price || product?.price || 0;
+        }
+        return product?.price || 0;
+    };
 
     if (isLoading) {
         return (
@@ -69,11 +102,15 @@ export default function ProductPage({ params }: Props) {
     };
 
     const handleAddToCart = () => {
-        // Add to cart with specific quantity
-        // Note: The context might need adjustment if it doesn't support adding with quantity directly
-        // behaving as adding N times for now or using the update logic if checking context
+        const currentPrice = getCurrentPrice();
+        const glazing = isSeafood && glazingPrices ? selectedGlazing : undefined;
+
         for (let i = 0; i < quantity; i++) {
-            addToCart(product);
+            if (hasVariants && activeVariant) {
+                addToCart(product, activeVariant, currentPrice, glazing);
+            } else {
+                addToCart(product, undefined, currentPrice, glazing);
+            }
         }
     };
 
@@ -146,14 +183,56 @@ export default function ProductPage({ params }: Props) {
                             </h1>
 
                             <div className="flex items-baseline gap-4 mb-8">
-                                <span className="text-4xl font-bold text-cyan-600">₹{product.price}</span>
-                                {product.compareAtPrice && product.compareAtPrice > product.price && (
+                                <span className="text-4xl font-bold text-cyan-600">₹{getCurrentPrice()}</span>
+                                {product.compareAtPrice && product.compareAtPrice > getCurrentPrice() && (
                                     <span className="text-2xl text-gray-400 line-through">₹{product.compareAtPrice}</span>
                                 )}
                                 <span className="text-lg text-gray-500 font-medium bg-gray-100 px-3 py-1 rounded-full">
                                     per {product.unitValue || 1} {product.unit}
                                 </span>
+                                {product.piecesPerKg && (
+                                    <span className="text-lg text-gray-500 font-medium bg-gray-100 px-3 py-1 rounded-full">
+                                        ~{product.piecesPerKg} pieces per KG
+                                    </span>
+                                )}
                             </div>
+
+                            {/* Size/Variant Selector */}
+                            {hasVariants && (
+                                <div className="mb-8">
+                                    <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
+                                        Select Size
+                                    </h3>
+                                    <div className="flex flex-wrap gap-2">
+                                        {variants.map((variant) => (
+                                            <button
+                                                key={variant.size}
+                                                onClick={() => setSelectedVariant(variant.size)}
+                                                className={`px-4 py-2.5 rounded-xl border-2 text-sm font-semibold transition-all duration-200 ${activeVariant === variant.size
+                                                    ? 'bg-cyan-600 text-white border-cyan-600 shadow-lg shadow-cyan-200'
+                                                    : 'bg-white text-gray-700 border-gray-200 hover:border-cyan-400 hover:text-cyan-600'
+                                                    }`}
+                                            >
+                                                {variant.size}
+                                                {variant.price > 0 && (
+                                                    <span className={`block text-xs mt-0.5 ${activeVariant === variant.size ? 'text-cyan-100' : 'text-gray-400'
+                                                        }`}>
+                                                        ₹{variant.price}
+                                                    </span>
+                                                )}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {isSeafood && glazingPrices && (
+                                <GlazingSelector
+                                    selectedGlazing={selectedGlazing}
+                                    onSelect={setSelectedGlazing}
+                                    prices={glazingPrices}
+                                />
+                            )}
 
                             <p className="text-lg text-gray-600 mb-10 leading-relaxed border-l-4 border-cyan-200 pl-6">
                                 {product.description}
@@ -213,7 +292,7 @@ export default function ProductPage({ params }: Props) {
                                                 d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
                                             />
                                         </svg>
-                                        Add {quantity} to Cart — ₹{(product.price * quantity).toFixed(2)}
+                                        Add {quantity} to Cart — ₹{(getCurrentPrice() * quantity).toFixed(2)}
                                     </button>
                                 </div>
                             )}

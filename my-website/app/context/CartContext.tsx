@@ -8,16 +8,19 @@ function getProductId(product: Product | LegacyProduct): string {
     return '_id' in product ? product._id : product.id;
 }
 
-// Helper to get cart item key (combines product ID and variation)
-function getCartItemKey(productId: string, variation?: string): string {
-    return variation ? `${productId}-${variation}` : productId;
+// Helper to get cart item key (combines product ID, variation and glazing)
+function getCartItemKey(productId: string, variation?: string, glazing?: number): string {
+    let key = productId;
+    if (variation) key += `-${variation}`;
+    if (glazing) key += `-${glazing}`;
+    return key;
 }
 
 // Action Types
 type CartAction =
-    | { type: 'ADD_ITEM'; payload: { product: Product | LegacyProduct; variation?: string; price?: number } }
-    | { type: 'REMOVE_ITEM'; payload: { productId: string; variation?: string } }
-    | { type: 'UPDATE_QUANTITY'; payload: { productId: string; variation?: string; quantity: number } }
+    | { type: 'ADD_ITEM'; payload: { product: Product | LegacyProduct; variation?: string; price?: number; glazing?: number } }
+    | { type: 'REMOVE_ITEM'; payload: { productId: string; variation?: string; glazing?: number } }
+    | { type: 'UPDATE_QUANTITY'; payload: { productId: string; variation?: string; glazing?: number; quantity: number } }
     | { type: 'CLEAR_CART' }
     | { type: 'TOGGLE_CART' }
     | { type: 'OPEN_CART' }
@@ -34,13 +37,13 @@ const initialState: CartState = {
 function cartReducer(state: CartState, action: CartAction): CartState {
     switch (action.type) {
         case 'ADD_ITEM': {
-            const { product, variation, price } = action.payload;
+            const { product, variation, price, glazing } = action.payload;
             const productId = getProductId(product);
-            const itemKey = getCartItemKey(productId, variation);
+            const itemKey = getCartItemKey(productId, variation, glazing);
 
             const existingItemIndex = state.items.findIndex(item => {
                 const existingId = getProductId(item.product);
-                const existingKey = getCartItemKey(existingId, item.variation);
+                const existingKey = getCartItemKey(existingId, item.variation, item.glazing);
                 return existingKey === itemKey;
             });
 
@@ -62,34 +65,35 @@ function cartReducer(state: CartState, action: CartAction): CartState {
                     quantity: 1,
                     variation,
                     price: price || product.price,
+                    glazing,
                 }],
                 isOpen: true,
             };
         }
 
         case 'REMOVE_ITEM': {
-            const { productId, variation } = action.payload;
-            const itemKey = getCartItemKey(productId, variation);
+            const { productId, variation, glazing } = action.payload;
+            const itemKey = getCartItemKey(productId, variation, glazing);
             return {
                 ...state,
                 items: state.items.filter(item => {
                     const existingId = getProductId(item.product);
-                    const existingKey = getCartItemKey(existingId, item.variation);
+                    const existingKey = getCartItemKey(existingId, item.variation, item.glazing);
                     return existingKey !== itemKey;
                 }),
             };
         }
 
         case 'UPDATE_QUANTITY': {
-            const { productId, variation, quantity } = action.payload;
-            const itemKey = getCartItemKey(productId, variation);
+            const { productId, variation, glazing, quantity } = action.payload;
+            const itemKey = getCartItemKey(productId, variation, glazing);
 
             if (quantity <= 0) {
                 return {
                     ...state,
                     items: state.items.filter(item => {
                         const existingId = getProductId(item.product);
-                        const existingKey = getCartItemKey(existingId, item.variation);
+                        const existingKey = getCartItemKey(existingId, item.variation, item.glazing);
                         return existingKey !== itemKey;
                     }),
                 };
@@ -99,7 +103,7 @@ function cartReducer(state: CartState, action: CartAction): CartState {
                 ...state,
                 items: state.items.map(item => {
                     const existingId = getProductId(item.product);
-                    const existingKey = getCartItemKey(existingId, item.variation);
+                    const existingKey = getCartItemKey(existingId, item.variation, item.glazing);
                     return existingKey === itemKey
                         ? { ...item, quantity }
                         : item;
@@ -130,9 +134,9 @@ function cartReducer(state: CartState, action: CartAction): CartState {
 // Context Type
 interface CartContextType {
     cart: CartState;
-    addToCart: (product: Product | LegacyProduct, variation?: string, price?: number) => void;
-    removeFromCart: (productId: string, variation?: string) => void;
-    updateQuantity: (productId: string, quantity: number, variation?: string) => void;
+    addToCart: (product: Product | LegacyProduct, variation?: string, price?: number, glazing?: number) => void;
+    removeFromCart: (productId: string, variation?: string, glazing?: number) => void;
+    updateQuantity: (productId: string, quantity: number, variation?: string, glazing?: number) => void;
     clearCart: () => void;
     toggleCart: () => void;
     openCart: () => void;
@@ -185,16 +189,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }, [cart.items]);
 
     // Actions
-    const addToCart = (product: Product | LegacyProduct, variation?: string, price?: number) => {
-        dispatch({ type: 'ADD_ITEM', payload: { product, variation, price } });
+    const addToCart = (product: Product | LegacyProduct, variation?: string, price?: number, glazing?: number) => {
+        dispatch({ type: 'ADD_ITEM', payload: { product, variation, price, glazing } });
     };
 
-    const removeFromCart = (productId: string, variation?: string) => {
-        dispatch({ type: 'REMOVE_ITEM', payload: { productId, variation } });
+    const removeFromCart = (productId: string, variation?: string, glazing?: number) => {
+        dispatch({ type: 'REMOVE_ITEM', payload: { productId, variation, glazing } });
     };
 
-    const updateQuantity = (productId: string, quantity: number, variation?: string) => {
-        dispatch({ type: 'UPDATE_QUANTITY', payload: { productId, variation, quantity } });
+    const updateQuantity = (productId: string, quantity: number, variation?: string, glazing?: number) => {
+        dispatch({ type: 'UPDATE_QUANTITY', payload: { productId, variation, glazing, quantity } });
     };
 
     const clearCart = () => {

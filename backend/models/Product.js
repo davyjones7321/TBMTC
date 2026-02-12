@@ -47,6 +47,15 @@ const productSchema = new mongoose.Schema({
         type: Number,
         default: 1
     },
+    piecesPerKg: {
+        type: Number,
+        default: null
+    },
+    glazingPrices: {
+        glazing20: { type: Number, default: null },
+        glazing30: { type: Number, default: null },
+        glazing50: { type: Number, default: null }
+    },
     category: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Category',
@@ -80,7 +89,12 @@ const productSchema = new mongoose.Schema({
         size: { type: String, required: true },
         price: { type: Number, required: true },
         stock: { type: Number, default: 0 },
-        sku: String
+        sku: String,
+        glazingPrices: {
+            glazing20: { type: Number, default: null },
+            glazing30: { type: Number, default: null },
+            glazing50: { type: Number, default: null }
+        }
     }],
     specifications: [{
         name: String,

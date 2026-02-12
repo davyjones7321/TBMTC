@@ -19,6 +19,10 @@ const orderSchema = new mongoose.Schema({
         name: String,
         sku: String,
         variation: String,
+        glazing: {
+            type: Number,
+            default: null
+        },
         price: {
             type: Number,
             required: true

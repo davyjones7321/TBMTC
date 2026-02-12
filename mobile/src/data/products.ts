@@ -246,8 +246,15 @@ export const PRODUCTS: Product[] = [
         imageKey: 'tiger_prawns',
         freshness: 'Frozen',
         variations: [
+            { size: '6/8', price: 0 },
             { size: '8/12', price: 0 },
             { size: '13/15', price: 0 },
+            { size: '16/20', price: 0 },
+            { size: '21/25', price: 0 },
+            { size: '31/40', price: 0 },
+            { size: '41/50', price: 0 },
+            { size: '51/60', price: 0 },
+            { size: '61/70', price: 0 },
         ],
     },
 

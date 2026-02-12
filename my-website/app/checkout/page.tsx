@@ -103,6 +103,7 @@ export default function CheckoutPage() {
                 quantity: item.quantity,
                 price: item.price || item.product.price,
                 variation: item.variation,
+                glazing: item.glazing,
             }));
 
             // Parse address name into firstName and lastName
@@ -481,6 +482,9 @@ export default function CheckoutPage() {
                                                             {item.variation && (
                                                                 <div className="text-xs text-cyan-600">Size: {item.variation}</div>
                                                             )}
+                                                            {item.glazing && (
+                                                                <div className="text-xs text-cyan-600">Glazing: {item.glazing}%</div>
+                                                            )}
                                                             <div className="text-sm text-gray-500">Qty: {item.quantity}</div>
                                                         </div>
                                                         <div className="font-semibold">₹{(itemPrice * item.quantity).toLocaleString()}</div>
@@ -541,6 +545,9 @@ export default function CheckoutPage() {
                                                     <span className="block truncate">{item.product.name}</span>
                                                     {item.variation && (
                                                         <span className="text-xs text-cyan-600 block">{item.variation}</span>
+                                                    )}
+                                                    {item.glazing && (
+                                                        <span className="text-xs text-cyan-600 block">Glazing: {item.glazing}%</span>
                                                     )}
                                                 </div>
                                                 <span className="text-gray-500">×{item.quantity}</span>

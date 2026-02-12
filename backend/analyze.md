@@ -24,6 +24,28 @@ Express.js backend API for JHOM FOODS e-commerce platform.
 
 ## Change Log
 
+### 2026-02-12 @ 17:20 IST - Pieces per KG Feature
+
+#### ✨ Added
+- `models/Product.js` - Added `piecesPerKg` field (Number, default: null) to Product schema
+- Allows admin to set approximate number of pieces per 1 kg for a product
+- Displayed on website and mobile app product detail pages
+
+---
+
+### 2026-02-12 @ 16:00 IST - All Prawn Sizes (9 Variants)
+
+#### 🔧 Modified
+- `scripts/add-variants.js` - Added Tiger Prawns to variant generation
+- `scripts/seed-full-products.js` - Tiger Prawns now has all 9 prawn sizes
+- `scripts/seed-frontend-products.js` - Same update for frontend seed data
+
+#### 📝 Notes
+- All 9 prawn sizes: 6/8, 8/12, 13/15, 16/20, 21/25, 31/40, 41/50, 51/60, 61/70
+- `add-variants.js` script was run to update the database
+
+---
+
 ### 2026-02-04 @ 14:07 IST - Documentation Verification
 
 #### 🔧 Verified

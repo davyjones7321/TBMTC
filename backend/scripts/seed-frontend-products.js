@@ -39,7 +39,7 @@ const frontendProducts = [
     { name: "Prawns PD", category: "Prawns", price: 0, image: "https://via.placeholder.com/300x200/2196F3/FFFFFF?text=Prawns+PD", unit: "kg", freshness: "Frozen", description: "Peeled and deveined, tail off", variations: ['6/8', '8/12', '13/15', '16/20', '21/25', '31/40', '41/50', '51/60', '61/70'] },
 
     // PRAWNS - Tiger
-    { name: "Tiger Prawns", category: "Prawns", price: 0, image: "https://via.placeholder.com/300x200/2196F3/FFFFFF?text=Tiger+Prawns", unit: "kg", freshness: "Frozen", description: "Premium tiger prawns", variations: ['8/12', '13/15'] },
+    { name: "Tiger Prawns", category: "Prawns", price: 0, image: "https://via.placeholder.com/300x200/2196F3/FFFFFF?text=Tiger+Prawns", unit: "kg", freshness: "Frozen", description: "Premium tiger prawns", variations: ['6/8', '8/12', '13/15', '16/20', '21/25', '31/40', '41/50', '51/60', '61/70'] },
 
     // CHICKEN - Frozen
     { name: "Chicken Breast Boneless", category: "Chicken", price: 0, image: "https://via.placeholder.com/300x200/FFC107/FFFFFF?text=Chicken+Breast", unit: "kg", freshness: "Frozen", description: "Tender chicken breast, protein-rich", variations: ['With Skin', 'Without Skin'] },

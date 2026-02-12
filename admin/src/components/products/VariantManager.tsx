@@ -10,14 +10,20 @@ interface Variant {
     price: number;
     stock: number;
     sku: string;
+    glazingPrices?: {
+        glazing20?: number;
+        glazing30?: number;
+        glazing50?: number;
+    };
 }
 
 interface VariantManagerProps {
     variants: Variant[];
     onChange: (variants: Variant[]) => void;
+    isSeafood?: boolean;
 }
 
-const VariantManager: React.FC<VariantManagerProps> = ({ variants, onChange }) => {
+const VariantManager: React.FC<VariantManagerProps> = ({ variants, onChange, isSeafood }) => {
     const handleAddVariant = () => {
         onChange([...variants, { size: '', price: 0, stock: 0, sku: '' }]);
     };
@@ -27,12 +33,24 @@ const VariantManager: React.FC<VariantManagerProps> = ({ variants, onChange }) =
         onChange(newVariants);
     };
 
-    const handleVariantChange = (index: number, field: keyof Variant, value: string | number) => {
+    const handleVariantChange = (index: number, field: string, value: string | number) => {
         const newVariants = [...variants];
-        newVariants[index] = {
-            ...newVariants[index],
-            [field]: value,
-        };
+
+        if (field.startsWith('glazingPrices.')) {
+            const glazeKey = field.split('.')[1];
+            newVariants[index] = {
+                ...newVariants[index],
+                glazingPrices: {
+                    ...newVariants[index].glazingPrices,
+                    [glazeKey]: value
+                }
+            };
+        } else {
+            newVariants[index] = {
+                ...newVariants[index],
+                [field]: value,
+            };
+        }
         onChange(newVariants);
     };
 
@@ -102,12 +120,47 @@ const VariantManager: React.FC<VariantManagerProps> = ({ variants, onChange }) =
                                         <Trash2 className="h-4 w-4" />
                                     </Button>
                                 </div>
+
+                                {isSeafood && (
+                                    <div className="col-span-12 grid grid-cols-3 gap-4 mt-2 bg-slate-50 p-3 rounded-md border border-slate-100">
+                                        <div>
+                                            <Label className="text-xs text-muted-foreground">Price (20% Glaze)</Label>
+                                            <Input
+                                                type="number"
+                                                value={variant.glazingPrices?.glazing20 || ''}
+                                                onChange={(e) => handleVariantChange(index, 'glazingPrices.glazing20', parseFloat(e.target.value) || 0)}
+                                                placeholder="₹"
+                                                className="h-8"
+                                            />
+                                        </div>
+                                        <div>
+                                            <Label className="text-xs text-muted-foreground">Price (30% Glaze)</Label>
+                                            <Input
+                                                type="number"
+                                                value={variant.glazingPrices?.glazing30 || ''}
+                                                onChange={(e) => handleVariantChange(index, 'glazingPrices.glazing30', parseFloat(e.target.value) || 0)}
+                                                placeholder="₹"
+                                                className="h-8"
+                                            />
+                                        </div>
+                                        <div>
+                                            <Label className="text-xs text-muted-foreground">Price (50% Glaze)</Label>
+                                            <Input
+                                                type="number"
+                                                value={variant.glazingPrices?.glazing50 || ''}
+                                                onChange={(e) => handleVariantChange(index, 'glazingPrices.glazing50', parseFloat(e.target.value) || 0)}
+                                                placeholder="₹"
+                                                className="h-8"
+                                            />
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         ))}
                     </div>
                 )}
             </CardContent>
-        </Card>
+        </Card >
     );
 };
 

@@ -2,12 +2,8 @@ import { Platform } from 'react-native';
 
 // API Configuration
 // Automatically detects platform and uses the correct URL
-// API Configuration
-// Production URL (Render)
-export const API_BASE_URL = 'https://tbmtc.onrender.com';
 
-/* 
-// Local Development Configuration (Uncomment for local dev)
+// Local Development Configuration
 const getApiBaseUrl = () => {
     if (Platform.OS === 'web') {
         return 'http://localhost:5000';
@@ -17,7 +13,11 @@ const getApiBaseUrl = () => {
         return 'http://192.168.1.11:5000'; // Update with your local IP
     }
 };
-// export const API_BASE_URL = getApiBaseUrl();
+export const API_BASE_URL = getApiBaseUrl();
+
+/* 
+// Production URL (Render) - Uncomment for production
+// export const API_BASE_URL = 'https://tbmtc.onrender.com';
 */
 
 // API Endpoints
@@ -42,4 +42,7 @@ export const API_ENDPOINTS = {
 
     // Profile
     PROFILE: '/api/profile',
+
+    // Bulk Orders (public)
+    BULK_ORDERS: '/api/bulk-orders',
 } as const;

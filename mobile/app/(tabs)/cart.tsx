@@ -2,7 +2,7 @@ import React from 'react';
 import {
     View,
     Text,
-    FlatList,
+    ScrollView,
     Image,
     TouchableOpacity,
     StyleSheet,
@@ -10,30 +10,34 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { ShoppingBag, Trash2, Plus, Minus, ChevronLeft, ArrowRight } from 'lucide-react-native';
+import { ShoppingBag, Trash2, Plus, Minus, ChevronLeft, Lock, ArrowRight } from 'lucide-react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useCart } from '../../src/contexts/CartContext';
 import { getProductImage } from '../../src/data/local-images';
-
-// Premium colors - Coral/Teal palette
-const COLORS = {
-    coral: '#D84A4A',
-    coralLight: '#E57373',
-    teal: '#4A9B9B',
-    charcoal: '#2D3436',
-    slate: '#636E72',
-    cream: '#FFF8F0',
-    creamTint: '#FFF5E6',
-};
+import { COLORS, FONTS, RADIUS, SHADOWS, SPACING } from '../../src/lib/theme';
+import MemberStatusCard from '../../src/components/MemberStatusCard';
 
 export default function CartScreen() {
     const router = useRouter();
     const { cart, cartCount, cartTotal, updateQuantity, removeFromCart, clearCart } = useCart();
 
-    const renderCartItem = ({ item }: { item: typeof cart[0] }) => {
+    // Calculate savings (demo value - 10% member discount)
+    const memberDiscount = cartTotal * 0.1;
+    const finalTotal = cartTotal - memberDiscount;
+    const deliveryFee = cartTotal >= 500 ? 0 : 49;
+
+    const renderCartItem = (item: typeof cart[0], index: number) => {
         const productImage = getProductImage(item.imageKey);
 
         return (
-            <View style={styles.cartItem}>
+            <View key={item.id} style={[styles.cartItem, index === 0 && { marginTop: 0 }]}>
+                {/* Bestseller Badge */}
+                {index === 0 && (
+                    <View style={styles.bestsellBadge}>
+                        <Text style={styles.bestsellText}>BESTSELLER</Text>
+                    </View>
+                )}
+
                 {/* Image */}
                 <Image source={productImage} style={styles.itemImage} resizeMode="cover" />
 
@@ -44,14 +48,16 @@ export default function CartScreen() {
                         {item.variation && (
                             <Text style={styles.itemVariation}>Size: {item.variation}</Text>
                         )}
+                        {item.glazing && (
+                            <Text style={[styles.itemVariation, { color: COLORS.primary }]}>Glazing: {item.glazing}%</Text>
+                        )}
                         <View style={styles.itemPriceRow}>
                             {item.price === 0 ? (
                                 <Text style={styles.priceOnRequest}>Price on Request</Text>
                             ) : (
-                                <Text style={styles.itemPrice}>₹{item.price * item.quantity}</Text>
+                                <Text style={styles.itemPrice}>₹{(item.price * item.quantity).toLocaleString()}</Text>
                             )}
                         </View>
-                        <Text style={styles.itemUnit}>{item.unit}</Text>
                     </View>
 
                     {/* Controls */}
@@ -60,9 +66,9 @@ export default function CartScreen() {
                         <View style={styles.quantityContainer}>
                             <TouchableOpacity
                                 style={styles.quantityButton}
-                                onPress={() => updateQuantity(item.id.split('-')[0], item.quantity - 1, item.variation)}
+                                onPress={() => updateQuantity(item.productId, item.quantity - 1, item.variation, item.glazing)}
                             >
-                                <Minus size={14} color={COLORS.slate} />
+                                <Minus size={14} color={COLORS.textSecondary} />
                             </TouchableOpacity>
 
                             <View style={styles.quantityDisplay}>
@@ -71,18 +77,18 @@ export default function CartScreen() {
 
                             <TouchableOpacity
                                 style={[styles.quantityButton, styles.quantityButtonPlus]}
-                                onPress={() => updateQuantity(item.id.split('-')[0], item.quantity + 1, item.variation)}
+                                onPress={() => updateQuantity(item.productId, item.quantity + 1, item.variation, item.glazing)}
                             >
-                                <Plus size={14} color={COLORS.coral} />
+                                <Plus size={14} color={COLORS.primary} />
                             </TouchableOpacity>
                         </View>
 
                         {/* Delete Button */}
                         <TouchableOpacity
                             style={styles.removeButton}
-                            onPress={() => removeFromCart(item.id.split('-')[0], item.variation)}
+                            onPress={() => removeFromCart(item.productId, item.variation, item.glazing)}
                         >
-                            <Trash2 size={18} color="#EF4444" />
+                            <Trash2 size={16} color={COLORS.error} />
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -94,12 +100,12 @@ export default function CartScreen() {
     if (cart.length === 0) {
         return (
             <View style={styles.container}>
-                <StatusBar barStyle="dark-content" backgroundColor={COLORS.cream} />
+                <StatusBar barStyle="dark-content" backgroundColor={COLORS.background} />
 
                 {/* Header */}
                 <SafeAreaView edges={['top']} style={styles.emptyHeader}>
                     <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-                        <ChevronLeft size={24} color={COLORS.charcoal} />
+                        <ChevronLeft size={24} color={COLORS.text} />
                     </TouchableOpacity>
                     <Text style={styles.emptyHeaderTitle}>Cart</Text>
                     <View style={{ width: 40 }} />
@@ -108,13 +114,12 @@ export default function CartScreen() {
                 {/* Empty State Content */}
                 <View style={styles.emptyContainer}>
                     <View style={styles.emptyIconContainer}>
-                        <ShoppingBag size={80} color={COLORS.coral} strokeWidth={1.5} />
-                        <Text style={styles.emptyEmoji}>😢</Text>
+                        <ShoppingBag size={80} color={COLORS.primary} strokeWidth={1.5} />
                     </View>
 
-                    <Text style={styles.emptyTitle}>Your cart is hungry!</Text>
+                    <Text style={styles.emptyTitle}>Your cart is empty!</Text>
                     <Text style={styles.emptySubtitle}>
-                        It looks like you haven't added any delicious items yet. Browse our fresh selection to get started.
+                        Browse our premium selection to discover fresh catches and quality meats.
                     </Text>
 
                     <TouchableOpacity
@@ -130,13 +135,13 @@ export default function CartScreen() {
 
     return (
         <View style={styles.container}>
-            <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+            <StatusBar barStyle="dark-content" backgroundColor={COLORS.card} />
 
             {/* Header */}
             <SafeAreaView edges={['top']} style={styles.header}>
                 <View style={styles.headerContent}>
                     <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-                        <ChevronLeft size={24} color={COLORS.charcoal} />
+                        <ChevronLeft size={24} color={COLORS.text} />
                     </TouchableOpacity>
                     <Text style={styles.headerTitle}>Your Cart</Text>
                     <TouchableOpacity onPress={clearCart}>
@@ -145,22 +150,68 @@ export default function CartScreen() {
                 </View>
             </SafeAreaView>
 
-            {/* Cart Items */}
-            <FlatList
-                data={cart}
-                renderItem={renderCartItem}
-                keyExtractor={(item) => item.id}
-                contentContainerStyle={styles.cartList}
+            {/* Cart Content */}
+            <ScrollView
                 showsVerticalScrollIndicator={false}
-            />
+                contentContainerStyle={styles.scrollContent}
+            >
+                {/* Member Status Card */}
+                <MemberStatusCard
+                    memberTier="Gold"
+                    points={2840}
+                    pointsToNext={160}
+                    progressPercent={95}
+                />
 
-            {/* Footer with Total and Checkout */}
+                {/* Cart Items */}
+                <View style={styles.cartSection}>
+                    <Text style={styles.sectionTitle}>{cartCount} Items</Text>
+                    {cart.map((item, index) => renderCartItem(item, index))}
+                </View>
+
+                {/* Order Summary */}
+                <View style={styles.summaryCard}>
+                    {/* Layered paper effect */}
+                    <View style={styles.paperLayer1} />
+                    <View style={styles.paperLayer2} />
+
+                    <View style={styles.summaryContent}>
+                        <Text style={styles.summaryTitle}>Order Summary</Text>
+
+                        <View style={styles.summaryRow}>
+                            <Text style={styles.summaryLabel}>Subtotal</Text>
+                            <Text style={styles.summaryValue}>₹{cartTotal.toLocaleString()}</Text>
+                        </View>
+
+                        <View style={styles.summaryRow}>
+                            <Text style={styles.summaryLabel}>Member Discount (10%)</Text>
+                            <Text style={[styles.summaryValue, { color: COLORS.success }]}>-₹{memberDiscount.toFixed(0)}</Text>
+                        </View>
+
+                        <View style={styles.summaryRow}>
+                            <Text style={styles.summaryLabel}>Delivery</Text>
+                            <Text style={styles.summaryValue}>{deliveryFee === 0 ? 'FREE' : `₹${deliveryFee}`}</Text>
+                        </View>
+
+                        <View style={styles.divider} />
+
+                        <View style={styles.summaryRow}>
+                            <Text style={styles.totalLabel}>Total</Text>
+                            <Text style={styles.totalValue}>₹{(finalTotal + deliveryFee).toFixed(0)}</Text>
+                        </View>
+                    </View>
+                </View>
+
+                <View style={{ height: 200 }} />
+            </ScrollView>
+
+            {/* Floating Checkout Bar */}
             <SafeAreaView edges={['bottom']} style={styles.footer}>
                 <View style={styles.footerContent}>
-                    <View style={styles.totalSection}>
-                        <Text style={styles.totalLabel}>Total ({cartCount} items)</Text>
-                        <Text style={styles.totalAmount}>
-                            {cartTotal === 0 ? 'Price on Request' : `₹${cartTotal.toLocaleString()}`}
+                    <View style={styles.footerLeft}>
+                        <Text style={styles.footerLabel}>Total</Text>
+                        <Text style={styles.footerTotal}>
+                            {cartTotal === 0 ? 'Price on Request' : `₹${(finalTotal + deliveryFee).toFixed(0)}`}
                         </Text>
                     </View>
 
@@ -168,8 +219,16 @@ export default function CartScreen() {
                         style={styles.checkoutButton}
                         onPress={() => router.push('/checkout/delivery-details')}
                     >
-                        <Text style={styles.checkoutButtonText}>Checkout Now</Text>
-                        <ArrowRight size={20} color="#FFFFFF" />
+                        <LinearGradient
+                            colors={[COLORS.primary, COLORS.primaryDark]}
+                            start={{ x: 0, y: 0 }}
+                            end={{ x: 1, y: 0 }}
+                            style={styles.checkoutGradient}
+                        >
+                            <Lock size={16} color={COLORS.white} />
+                            <Text style={styles.checkoutButtonText}>Secure Checkout</Text>
+                            <ArrowRight size={18} color={COLORS.white} />
+                        </LinearGradient>
                     </TouchableOpacity>
                 </View>
             </SafeAreaView>
@@ -180,86 +239,106 @@ export default function CartScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: COLORS.cream,
+        backgroundColor: COLORS.background,
     },
     // Header styles
     header: {
-        backgroundColor: '#FFFFFF',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.05,
-        shadowRadius: 4,
-        elevation: 2,
+        backgroundColor: COLORS.card,
+        ...SHADOWS.soft,
     },
     headerContent: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        paddingHorizontal: 16,
-        paddingVertical: 12,
-        paddingTop: 16,
+        paddingHorizontal: SPACING.lg,
+        paddingVertical: SPACING.md,
+        paddingTop: SPACING.lg,
     },
     backButton: {
         width: 40,
         height: 40,
         alignItems: 'center',
         justifyContent: 'center',
-        borderRadius: 12,
+        borderRadius: RADIUS.md,
+        backgroundColor: COLORS.background,
     },
     headerTitle: {
+        fontFamily: FONTS.displayBold,
         fontSize: 22,
-        fontWeight: '700',
-        color: COLORS.charcoal,
+        color: COLORS.text,
         letterSpacing: -0.5,
     },
     clearText: {
-        fontSize: 15,
-        color: COLORS.coralLight,
-        fontWeight: '600',
+        fontFamily: FONTS.bodyBold,
+        fontSize: 14,
+        color: COLORS.primaryLight,
     },
-    // Cart List
-    cartList: {
-        padding: 16,
-        paddingBottom: 220,
+    // ScrollView content
+    scrollContent: {
+        paddingBottom: 120,
     },
+    // Cart Section
+    cartSection: {
+        paddingHorizontal: SPACING.lg,
+        marginTop: SPACING.lg,
+    },
+    sectionTitle: {
+        fontFamily: FONTS.bodyBold,
+        fontSize: 16,
+        color: COLORS.text,
+        marginBottom: SPACING.md,
+    },
+    // Cart Items
     cartItem: {
         flexDirection: 'row',
-        backgroundColor: '#FFFFFF',
-        borderRadius: 20,
-        padding: 16,
-        marginBottom: 16,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.04,
-        shadowRadius: 8,
-        elevation: 2,
-        borderWidth: 1,
-        borderColor: 'rgba(0,0,0,0.04)',
+        backgroundColor: COLORS.card,
+        borderRadius: RADIUS.xl,
+        padding: SPACING.lg,
+        marginTop: SPACING.md,
+        position: 'relative',
+        overflow: 'hidden',
+        ...SHADOWS.soft,
+    },
+    bestsellBadge: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        backgroundColor: COLORS.accentWarm,
+        paddingHorizontal: 12,
+        paddingVertical: 4,
+        borderBottomRightRadius: RADIUS.md,
+    },
+    bestsellText: {
+        fontFamily: FONTS.bodyBold,
+        fontSize: 9,
+        color: COLORS.white,
+        letterSpacing: 0.5,
     },
     itemImage: {
-        width: 88,
-        height: 88,
-        borderRadius: 16,
-        backgroundColor: '#F3F4F6',
+        width: 80,
+        height: 80,
+        borderRadius: RADIUS.lg,
+        backgroundColor: COLORS.background,
     },
     itemContent: {
         flex: 1,
-        marginLeft: 16,
+        marginLeft: SPACING.lg,
         justifyContent: 'space-between',
     },
     itemDetails: {
         flex: 1,
     },
     itemName: {
-        fontSize: 17,
-        fontWeight: '600',
-        color: COLORS.charcoal,
+        fontFamily: FONTS.bodyBold,
+        fontSize: 16,
+        color: COLORS.text,
         marginBottom: 2,
         lineHeight: 22,
     },
     itemVariation: {
+        fontFamily: FONTS.body,
         fontSize: 12,
-        color: COLORS.slate,
+        color: COLORS.textSecondary,
         marginBottom: 4,
     },
     itemPriceRow: {
@@ -267,187 +346,238 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     itemPrice: {
-        fontSize: 16,
-        fontWeight: '700',
-        color: COLORS.coral,
+        fontFamily: FONTS.displayBold,
+        fontSize: 18,
+        color: COLORS.primary,
     },
     priceOnRequest: {
+        fontFamily: FONTS.bodyBold,
         fontSize: 13,
-        fontWeight: '600',
-        color: COLORS.slate,
-    },
-    itemUnit: {
-        fontSize: 11,
-        color: COLORS.slate,
-        marginTop: 2,
+        color: COLORS.textSecondary,
     },
     controlsContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'flex-end',
-        gap: 12,
-        marginTop: 8,
+        gap: SPACING.md,
+        marginTop: SPACING.sm,
     },
     quantityContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        borderRadius: 12,
+        borderRadius: RADIUS.md,
         overflow: 'hidden',
         borderWidth: 1,
-        borderColor: '#E5E7EB',
+        borderColor: COLORS.border,
     },
     quantityButton: {
-        width: 36,
-        height: 36,
+        width: 32,
+        height: 32,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: COLORS.cream,
+        backgroundColor: COLORS.background,
     },
     quantityButtonPlus: {
-        backgroundColor: COLORS.cream,
+        backgroundColor: COLORS.background,
     },
     quantityDisplay: {
-        width: 40,
-        height: 36,
+        width: 36,
+        height: 32,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#FFFFFF',
+        backgroundColor: COLORS.card,
     },
     quantityText: {
-        fontSize: 15,
-        fontWeight: '600',
-        color: COLORS.charcoal,
+        fontFamily: FONTS.bodyBold,
+        fontSize: 14,
+        color: COLORS.text,
     },
     removeButton: {
-        width: 36,
-        height: 36,
-        borderRadius: 12,
-        backgroundColor: '#FEF2F2',
+        width: 32,
+        height: 32,
+        borderRadius: RADIUS.sm,
+        backgroundColor: 'rgba(239, 68, 68, 0.1)',
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    // Order Summary Card
+    summaryCard: {
+        marginHorizontal: SPACING.lg,
+        marginTop: SPACING['2xl'],
+        position: 'relative',
+    },
+    paperLayer1: {
+        position: 'absolute',
+        top: 8,
+        left: 8,
+        right: -8,
+        bottom: -8,
+        backgroundColor: COLORS.border,
+        borderRadius: RADIUS.xl,
+        transform: [{ rotate: '-2deg' }],
+    },
+    paperLayer2: {
+        position: 'absolute',
+        top: 4,
+        left: 4,
+        right: -4,
+        bottom: -4,
+        backgroundColor: COLORS.card,
+        borderRadius: RADIUS.xl,
+        transform: [{ rotate: '-1deg' }],
+        ...SHADOWS.soft,
+    },
+    summaryContent: {
+        backgroundColor: COLORS.card,
+        borderRadius: RADIUS.xl,
+        padding: SPACING['2xl'],
+        ...SHADOWS.soft,
+    },
+    summaryTitle: {
+        fontFamily: FONTS.displayBold,
+        fontSize: 20,
+        color: COLORS.text,
+        marginBottom: SPACING.lg,
+    },
+    summaryRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: SPACING.md,
+    },
+    summaryLabel: {
+        fontFamily: FONTS.body,
+        fontSize: 14,
+        color: COLORS.textSecondary,
+    },
+    summaryValue: {
+        fontFamily: FONTS.bodyBold,
+        fontSize: 14,
+        color: COLORS.text,
+    },
+    divider: {
+        height: 1,
+        backgroundColor: COLORS.border,
+        marginVertical: SPACING.lg,
+    },
+    totalLabel: {
+        fontFamily: FONTS.displayBold,
+        fontSize: 16,
+        color: COLORS.text,
+    },
+    totalValue: {
+        fontFamily: FONTS.displayBold,
+        fontSize: 24,
+        color: COLORS.primary,
     },
     // Footer
     footer: {
         position: 'absolute',
-        bottom: 80, // Raised above the tab bar
+        bottom: 80,
         left: 0,
         right: 0,
-        backgroundColor: '#FFFFFF',
-        borderTopLeftRadius: 32,
-        borderTopRightRadius: 32,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: -4 },
-        shadowOpacity: 0.08,
-        shadowRadius: 16,
-        elevation: 10,
-        paddingBottom: 24,
+        backgroundColor: COLORS.card,
+        borderTopLeftRadius: RADIUS['2xl'],
+        borderTopRightRadius: RADIUS['2xl'],
+        ...SHADOWS.premium,
     },
     footerContent: {
-        paddingHorizontal: 24,
-        paddingTop: 24,
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: SPACING.xl,
+        paddingTop: SPACING.lg,
+        paddingBottom: SPACING.lg,
+        gap: SPACING.lg,
     },
-    totalSection: {
-        marginBottom: 20,
+    footerLeft: {
+        flex: 1,
     },
-    totalLabel: {
-        fontSize: 14,
-        color: COLORS.slate,
-        fontWeight: '500',
-        marginBottom: 4,
+    footerLabel: {
+        fontFamily: FONTS.body,
+        fontSize: 12,
+        color: COLORS.textSecondary,
+        marginBottom: 2,
     },
-    totalAmount: {
-        fontSize: 32,
-        fontWeight: '800',
-        color: COLORS.charcoal,
-        letterSpacing: -1,
+    footerTotal: {
+        fontFamily: FONTS.displayBold,
+        fontSize: 24,
+        color: COLORS.text,
     },
     checkoutButton: {
+        flex: 1,
+        borderRadius: RADIUS.lg,
+        overflow: 'hidden',
+        ...SHADOWS.button,
+    },
+    checkoutGradient: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: COLORS.coral,
-        paddingVertical: 18,
-        borderRadius: 16,
+        paddingVertical: 16,
         gap: 8,
-        shadowColor: COLORS.coral,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.25,
-        shadowRadius: 8,
-        elevation: 6,
     },
     checkoutButtonText: {
-        color: '#FFFFFF',
-        fontSize: 17,
-        fontWeight: '700',
+        fontFamily: FONTS.bodyBold,
+        color: COLORS.white,
+        fontSize: 15,
     },
     // Empty State
     emptyHeader: {
-        backgroundColor: COLORS.cream,
+        backgroundColor: COLORS.background,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        paddingHorizontal: 16,
-        paddingTop: 16,
-        paddingBottom: 8,
+        paddingHorizontal: SPACING.lg,
+        paddingTop: SPACING.lg,
+        paddingBottom: SPACING.sm,
     },
     emptyHeaderTitle: {
+        fontFamily: FONTS.displayBold,
         fontSize: 20,
-        fontWeight: '700',
-        color: COLORS.charcoal,
+        color: COLORS.text,
     },
     emptyContainer: {
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        paddingHorizontal: 32,
+        paddingHorizontal: SPACING['3xl'],
         paddingBottom: 60,
     },
     emptyIconContainer: {
-        width: 200,
-        height: 200,
-        borderRadius: 100,
-        backgroundColor: COLORS.creamTint,
+        width: 180,
+        height: 180,
+        borderRadius: 90,
+        backgroundColor: COLORS.backgroundCool,
         alignItems: 'center',
         justifyContent: 'center',
-        marginBottom: 32,
-        position: 'relative',
-    },
-    emptyEmoji: {
-        fontSize: 40,
-        position: 'absolute',
-        top: 50,
-        right: 40,
+        marginBottom: SPACING['3xl'],
     },
     emptyTitle: {
-        fontSize: 28,
-        fontWeight: '700',
-        color: COLORS.charcoal,
-        marginBottom: 12,
+        fontFamily: FONTS.displayBold,
+        fontSize: 26,
+        color: COLORS.text,
+        marginBottom: SPACING.md,
         textAlign: 'center',
-        letterSpacing: -0.5,
     },
     emptySubtitle: {
+        fontFamily: FONTS.body,
         fontSize: 15,
-        color: COLORS.slate,
+        color: COLORS.textSecondary,
         textAlign: 'center',
         lineHeight: 22,
-        marginBottom: 32,
+        marginBottom: SPACING['3xl'],
         maxWidth: 300,
     },
     shopButton: {
-        backgroundColor: COLORS.coral,
-        paddingVertical: 16,
-        paddingHorizontal: 40,
-        borderRadius: 16,
-        shadowColor: COLORS.coral,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.25,
-        shadowRadius: 8,
-        elevation: 6,
+        backgroundColor: COLORS.primary,
+        paddingVertical: SPACING.lg,
+        paddingHorizontal: SPACING['4xl'],
+        borderRadius: RADIUS.lg,
+        ...SHADOWS.button,
     },
     shopButtonText: {
-        color: '#FFFFFF',
+        fontFamily: FONTS.bodyBold,
+        color: COLORS.white,
         fontSize: 16,
-        fontWeight: '700',
     },
 });

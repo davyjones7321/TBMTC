@@ -130,7 +130,7 @@ export const authApi = {
 
 // Products API helpers
 export const productsApi = {
-    getAll: async (params?: { page?: number; limit?: number; search?: string; category?: string }) => {
+    getAll: async (params?: { page?: number; limit?: number; search?: string; category?: string; isFeatured?: boolean }) => {
         const response = await api.get('/api/products', { params });
         return response.data;
     },

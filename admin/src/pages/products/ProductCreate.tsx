@@ -27,6 +27,7 @@ const ProductCreate: React.FC = () => {
         price: '',
         unit: 'piece',
         unitValue: '1',
+        piecesPerKg: '',
         category: '',
         stockQuantity: '',
         lowStockThreshold: '10',
@@ -34,6 +35,11 @@ const ProductCreate: React.FC = () => {
         tags: '',
         isActive: true,
         isFeatured: false,
+        glazingPrices: {
+            glazing20: '',
+            glazing30: '',
+            glazing50: ''
+        }
     });
 
     useEffect(() => {
@@ -51,6 +57,9 @@ const ProductCreate: React.FC = () => {
         }
     };
 
+    const selectedCategory = categories.find(c => c._id === formData.category);
+    const isSeafood = selectedCategory ? ['Seafood', 'Fish', 'Prawns'].some(term => selectedCategory.name.includes(term)) : false;
+
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
@@ -62,6 +71,19 @@ const ProductCreate: React.FC = () => {
 
     const handleSwitchChange = (name: string, checked: boolean) => {
         setFormData(prev => ({ ...prev, [name]: checked }));
+    };
+
+    const handleGlazingChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        // name will be "glazingPrices.glazing20"
+        const field = name.split('.')[1];
+        setFormData(prev => ({
+            ...prev,
+            glazingPrices: {
+                ...prev.glazingPrices,
+                [field]: value
+            }
+        }));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -93,6 +115,7 @@ const ProductCreate: React.FC = () => {
                 price: safeParseFloat(formData.price),
                 unit: formData.unit,
                 unitValue: safeParseFloat(formData.unitValue, 1),
+                piecesPerKg: formData.piecesPerKg ? safeParseFloat(formData.piecesPerKg) : undefined,
                 category: formData.category,
                 images: imageUrl ? [{ url: imageUrl, alt: formData.name, isPrimary: true }] : [],
                 stock: {
@@ -107,8 +130,14 @@ const ProductCreate: React.FC = () => {
                     size: v.size,
                     price: Number(v.price),
                     stock: Number(v.stock),
-                    sku: v.sku
-                }))
+                    sku: v.sku,
+                    glazingPrices: v.glazingPrices
+                })),
+                glazingPrices: {
+                    glazing20: formData.glazingPrices.glazing20 ? safeParseFloat(formData.glazingPrices.glazing20) : undefined,
+                    glazing30: formData.glazingPrices.glazing30 ? safeParseFloat(formData.glazingPrices.glazing30) : undefined,
+                    glazing50: formData.glazingPrices.glazing50 ? safeParseFloat(formData.glazingPrices.glazing50) : undefined
+                }
             };
 
             const response = await productsApi.create(productData);
@@ -224,7 +253,7 @@ const ProductCreate: React.FC = () => {
                             <CardDescription>Set price and unit measurement</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                                 <div>
                                     <Label htmlFor="price">Selling Price (₹) *</Label>
                                     <Input
@@ -271,12 +300,67 @@ const ProductCreate: React.FC = () => {
                                     />
                                     <p className="text-xs text-gray-500 mt-1">e.g., 1 for 1 kg, 0.5 for 500g</p>
                                 </div>
+
+                                <div>
+                                    <Label htmlFor="piecesPerKg">Pieces per KG</Label>
+                                    <Input
+                                        id="piecesPerKg"
+                                        name="piecesPerKg"
+                                        type="number"
+                                        step="1"
+                                        value={formData.piecesPerKg}
+                                        onChange={handleInputChange}
+                                        placeholder="e.g., 25"
+                                    />
+                                    <p className="text-xs text-gray-500 mt-1">Approx. pieces in 1 kg</p>
+                                </div>
                             </div>
+
+                            {isSeafood && variants.length === 0 && (
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 pt-4 border-t">
+                                    <div className="md:col-span-3">
+                                        <h4 className="text-sm font-medium mb-2">Glazing Prices (for non-variant products)</h4>
+                                    </div>
+                                    <div>
+                                        <Label htmlFor="glazing20">Price (20% Glaze)</Label>
+                                        <Input
+                                            id="glazing20"
+                                            name="glazingPrices.glazing20"
+                                            type="number"
+                                            value={formData.glazingPrices.glazing20}
+                                            onChange={handleGlazingChange}
+                                            placeholder="₹"
+                                        />
+                                    </div>
+                                    <div>
+                                        <Label htmlFor="glazing30">Price (30% Glaze)</Label>
+                                        <Input
+                                            id="glazing30"
+                                            name="glazingPrices.glazing30"
+                                            type="number"
+                                            value={formData.glazingPrices.glazing30}
+                                            onChange={handleGlazingChange}
+                                            placeholder="₹"
+                                        />
+                                    </div>
+                                    <div>
+                                        <Label htmlFor="glazing50">Price (50% Glaze)</Label>
+                                        <Input
+                                            id="glazing50"
+                                            name="glazingPrices.glazing50"
+                                            type="number"
+                                            value={formData.glazingPrices.glazing50}
+                                            onChange={handleGlazingChange}
+                                            placeholder="₹"
+                                        />
+                                    </div>
+                                </div>
+                            )}
                         </CardContent>
                     </Card>
 
                     {/* Variants */}
-                    <VariantManager variants={variants} onChange={setVariants} />
+                    <VariantManager variants={variants} onChange={setVariants} isSeafood={isSeafood} />
 
                     {/* Inventory */}
                     <Card>

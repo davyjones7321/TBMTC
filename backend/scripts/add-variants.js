@@ -20,7 +20,8 @@ const updateProducts = async () => {
     try {
         const productsToUpdate = [
             { name: 'Prawns PD', basePrice: 800 }, // Example base price, will vary
-            { name: 'Prawns PDTO', basePrice: 850 }
+            { name: 'Prawns PDTO', basePrice: 850 },
+            { name: 'Tiger Prawns', basePrice: 1200 }
         ];
 
         for (const p of productsToUpdate) {

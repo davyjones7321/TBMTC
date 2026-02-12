@@ -44,6 +44,7 @@ mobile/
 │   ├── orders.tsx          # My Orders page
 │   ├── help-support.tsx    # Help & Support page
 │   ├── location-select.tsx # Location selection page
+│   ├── bulk-orders.tsx     # Bulk order inquiry form
 │   └── product/            # Product details
 │       └── [id].tsx        # Dynamic product page
 ├── src/
@@ -96,6 +97,7 @@ mobile/
 | `/api/orders` | POST | Create order |
 | `/api/orders/my-orders` | GET | Get user's orders |
 | `/api/contact` | POST | Submit support query |
+| `/api/bulk-orders` | POST | Submit bulk order inquiry |
 
 ---
 
@@ -154,6 +156,7 @@ interface Product {
     variations?: Array<{ size: string; price: number }>;
     inStock: boolean;
     stockQuantity: number;
+    piecesPerKg?: number;     // Approx. pieces per 1 kg (admin-managed)
 }
 ```
 
@@ -166,6 +169,21 @@ interface User {
     email: string;
     phone?: string;
     role: string;
+}
+```
+
+### Bulk Order
+```typescript
+interface BulkOrderFormData {
+    businessName: string;
+    businessType: 'restaurant' | 'hotel' | 'catering' | 'retailer' | 'other';
+    contactName: string;
+    email: string;
+    phone: string;
+    city: string;
+    estimatedMonthlyVolume: string;
+    productInterests: string[];
+    message: string;
 }
 ```
 
@@ -219,7 +237,10 @@ npm run web
 ## 📝 Changelog
 
 | Date | Changes |
-|------|---------|
+|----------|---------|
+| Feb 12, 2026 | Added: **Pieces per KG** display on product detail page. New `piecesPerKg` field in `Product` interface and `ProductsContext` transform. Styled card below info cards showing "PIECES PER KG ~X pcs" (only when set by admin). |
+| Feb 12, 2026 | Modified: **All 9 Prawn Sizes** now displayed. Removed `.slice(0, 3)` limit in `product/[id].tsx`. Redesigned `WeightSelector.tsx` from fixed 3-column track to horizontally scrollable chip selector showing size + price. Updated `WeeklySelection.tsx` and `GalleryProductCard.tsx` with per-product size selectors. Added all 9 sizes to Tiger Prawns in `data/products.ts`. |
+| Feb 10, 2026 | Added: Bulk Orders feature (`app/bulk-orders.tsx`) with form, validation, and API integration. Linked from Home screen CTA. |
 | Jan 27, 2026 | Config: Switched API to Production - Updated `api-config.ts` to use `https://jhomfoods-test-1.onrender.com` by default for all platforms, replacing localhost configuration. |
 | Jan 27, 2026 | Added: Global Error Handling - Standardized error messages for API (400, 401, 404, 500), Auth, Cart, and Location. |
 | Jan 27, 2026 | Refactored: Checkout flow headers. Replaced native stack headers with custom `SafeAreaView` headers in `delivery-details.tsx`, `payment.tsx`, and `review-order.tsx` to definitively resolve status bar overlap/cutoff issues. |

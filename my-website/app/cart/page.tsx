@@ -144,6 +144,11 @@ export default function CartPage() {
                                                     <p className="text-sm text-gray-500">
                                                         {weightDisplay}
                                                     </p>
+                                                    {item.glazing && (
+                                                        <p className="text-sm text-cyan-600">
+                                                            Glazing: {item.glazing}%
+                                                        </p>
+                                                    )}
                                                     <button
                                                         onClick={() => removeFromCart(productId, item.variation)}
                                                         className="text-sm text-red-500 hover:text-red-600 mt-1"

@@ -40,6 +40,12 @@ export interface Product {
     cost?: number;
     unit?: string;
     unitValue?: number;
+    piecesPerKg?: number;
+    glazingPrices?: {
+        glazing20?: number;
+        glazing30?: number;
+        glazing50?: number;
+    };
     category: {
         _id: string;
         name: string;
@@ -82,6 +88,12 @@ export interface ProductCreateData {
     cost?: number;
     unit?: string;
     unitValue?: number;
+    piecesPerKg?: number;
+    glazingPrices?: {
+        glazing20?: number;
+        glazing30?: number;
+        glazing50?: number;
+    };
     category: string;
     images: {
         url: string;
@@ -101,6 +113,11 @@ export interface ProductCreateData {
         price: number;
         stock: number;
         sku: string;
+        glazingPrices?: {
+            glazing20?: number;
+            glazing30?: number;
+            glazing50?: number;
+        };
     }[];
 }
 
@@ -114,6 +131,12 @@ export interface ProductUpdateData {
     cost?: number;
     unit?: string;
     unitValue?: number;
+    piecesPerKg?: number;
+    glazingPrices?: {
+        glazing20?: number;
+        glazing30?: number;
+        glazing50?: number;
+    };
     category?: string;
     images?: { url: string; alt?: string; isPrimary: boolean }[];
     stock?: {
@@ -129,6 +152,11 @@ export interface ProductUpdateData {
         price: number;
         stock: number;
         sku: string;
+        glazingPrices?: {
+            glazing20?: number;
+            glazing30?: number;
+            glazing50?: number;
+        };
     }[];
 }
 
@@ -169,6 +197,7 @@ export interface Order {
         total: number;
         subtotal?: number;
         variation?: string;
+        glazing?: number;
     }[];
     subtotal: number;
     tax: number;

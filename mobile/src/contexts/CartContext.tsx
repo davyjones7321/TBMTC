@@ -13,6 +13,7 @@ interface CartItem {
     unit: string;
     quantity: number;
     variation?: string;
+    glazing?: number;
 }
 
 interface ShippingAddress {
@@ -28,9 +29,9 @@ interface CartContextType {
     cartCount: number;
     cartTotal: number;
     loading: boolean;
-    addToCart: (product: Product, variation?: string) => void;
-    removeFromCart: (id: string, variation?: string) => void;
-    updateQuantity: (id: string, quantity: number, variation?: string) => void;
+    addToCart: (product: Product, variation?: string, glazing?: number) => void;
+    removeFromCart: (id: string, variation?: string, glazing?: number) => void;
+    updateQuantity: (id: string, quantity: number, variation?: string, glazing?: number) => void;
     clearCart: () => void;
     placeOrder: (shippingAddress: ShippingAddress, paymentMethod?: string) => Promise<{ success: boolean; orderId?: string; message?: string }>;
 }
@@ -74,9 +75,12 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
     };
 
-    const addToCart = useCallback((product: Product, variation?: string) => {
+    const addToCart = useCallback((product: Product, variation?: string, glazing?: number) => {
         setCart((prevCart) => {
-            const cartItemId = variation ? `${product.id}-${variation}` : product.id;
+            let cartItemId = product.id;
+            if (variation) cartItemId += `-${variation}`;
+            if (glazing) cartItemId += `-${glazing}`;
+
             const existingItemIndex = prevCart.findIndex(
                 (cartItem) => cartItem.id === cartItemId
             );
@@ -89,11 +93,24 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
             // Get price from variation if available
             let price = product.price;
+            let glazingPrices = product.glazingPrices;
+
             if (variation && product.variations) {
                 const selectedVariation = product.variations.find(v => v.size === variation);
                 if (selectedVariation) {
                     price = selectedVariation.price;
+                    // Variant glazing prices take precedence if available
+                    if (selectedVariation.glazingPrices) {
+                        glazingPrices = selectedVariation.glazingPrices;
+                    }
                 }
+            }
+
+            // Apply glazing price if selected
+            if (glazing && glazingPrices) {
+                if (glazing === 20 && glazingPrices.glazing20) price = glazingPrices.glazing20;
+                else if (glazing === 30 && glazingPrices.glazing30) price = glazingPrices.glazing30;
+                else if (glazing === 50 && glazingPrices.glazing50) price = glazingPrices.glazing50;
             }
 
             return [...prevCart, {
@@ -105,22 +122,29 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 unit: product.unit,
                 quantity: 1,
                 variation,
+                glazing,
             }];
         });
     }, []);
 
-    const removeFromCart = useCallback((id: string, variation?: string) => {
-        const cartItemId = variation ? `${id}-${variation}` : id;
+    const removeFromCart = useCallback((id: string, variation?: string, glazing?: number) => {
+        let cartItemId = id;
+        if (variation) cartItemId += `-${variation}`;
+        if (glazing) cartItemId += `-${glazing}`;
+
         setCart((prevCart) => prevCart.filter((item) => item.id !== cartItemId));
     }, []);
 
-    const updateQuantity = useCallback((id: string, quantity: number, variation?: string) => {
+    const updateQuantity = useCallback((id: string, quantity: number, variation?: string, glazing?: number) => {
         if (quantity <= 0) {
-            removeFromCart(id, variation);
+            removeFromCart(id, variation, glazing);
             return;
         }
 
-        const cartItemId = variation ? `${id}-${variation}` : id;
+        let cartItemId = id;
+        if (variation) cartItemId += `-${variation}`;
+        if (glazing) cartItemId += `-${glazing}`;
+
         setCart((prevCart) =>
             prevCart.map((item) =>
                 item.id === cartItemId ? { ...item, quantity } : item
@@ -142,6 +166,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 quantity: item.quantity,
                 price: item.price,
                 variation: item.variation,
+                glazing: item.glazing,
             }));
 
             const orderData = {

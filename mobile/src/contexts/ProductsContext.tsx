@@ -12,6 +12,7 @@ export interface BackendProduct {
     compareAtPrice?: number;
     unit: string;
     unitValue?: number;
+    piecesPerKg?: number;
     category: {
         _id: string;
         name: string;
@@ -48,12 +49,14 @@ export interface Product {
     imageUrl: string;     // Changed from imageKey to URL
     imageKey: string;     // Kept for backward compatibility
     freshness: 'Fresh' | 'Frozen';
+    isFeatured: boolean;
     variations?: Array<{
         size: string;
         price: number;
     }>;
     inStock: boolean;
     stockQuantity: number;
+    piecesPerKg?: number;
 }
 
 export type Category = 'All' | 'Seafood' | 'Prawns' | 'Chicken' | 'Mutton';
@@ -119,12 +122,14 @@ const transformProduct = (backendProduct: BackendProduct): Product => {
         imageUrl: imageUrl,
         imageKey: imageKey,
         freshness: freshness,
+        isFeatured: backendProduct.isFeatured || false,
         variations: backendProduct.variants?.map(v => ({
             size: v.size,
             price: v.price || 0,
         })),
         inStock: backendProduct.stock?.quantity > 0,
         stockQuantity: backendProduct.stock?.quantity || 0,
+        piecesPerKg: backendProduct.piecesPerKg || undefined,
     };
 };
 
