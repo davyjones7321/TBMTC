@@ -31,7 +31,17 @@ export interface BackendProduct {
         size: string;
         price: number;
         stock?: number;
+        glazingPrices?: {
+            glazing20?: number;
+            glazing30?: number;
+            glazing50?: number;
+        };
     }>;
+    glazingPrices?: {
+        glazing20?: number;
+        glazing30?: number;
+        glazing50?: number;
+    };
     isActive: boolean;
     isFeatured: boolean;
     tags?: string[];
@@ -53,7 +63,17 @@ export interface Product {
     variations?: Array<{
         size: string;
         price: number;
+        glazingPrices?: {
+            glazing20?: number;
+            glazing30?: number;
+            glazing50?: number;
+        };
     }>;
+    glazingPrices?: {
+        glazing20?: number;
+        glazing30?: number;
+        glazing50?: number;
+    };
     inStock: boolean;
     stockQuantity: number;
     piecesPerKg?: number;
@@ -126,7 +146,9 @@ const transformProduct = (backendProduct: BackendProduct): Product => {
         variations: backendProduct.variants?.map(v => ({
             size: v.size,
             price: v.price || 0,
+            glazingPrices: v.glazingPrices,
         })),
+        glazingPrices: backendProduct.glazingPrices,
         inStock: backendProduct.stock?.quantity > 0,
         stockQuantity: backendProduct.stock?.quantity || 0,
         piecesPerKg: backendProduct.piecesPerKg || undefined,

@@ -110,6 +110,8 @@ export default function ProductDetailScreen() {
             imageKey: product.imageKey,
             freshness: product.freshness,
             variations: product.variations,
+            glazingPrices: product.glazingPrices,
+            piecesPerKg: product.piecesPerKg,
         };
 
         // Add to cart multiple times for quantity

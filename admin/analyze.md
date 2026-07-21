@@ -75,4 +75,11 @@ Both `ProductCreate.tsx` and `ProductEdit.tsx` use the same form layout:
 
 ---
 
+### 2026-02-12 @ 19:45 IST - UI Fixes
+#### 🐛 Fixed
+- **Double Scrollbars:** Fixed issue where admin panel showed two vertical scrollbars.
+- Added `height: 100vh` and `overflow: hidden` to `body` in `index.css` to prevent browser-level scrolling.
+
+---
+
 > **Note:** Keep this document updated with all admin panel changes, additions, and modifications.

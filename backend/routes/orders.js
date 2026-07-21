@@ -1,4 +1,5 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const router = express.Router();
 const Order = require('../models/Order');
 const Customer = require('../models/Customer');
@@ -15,108 +16,223 @@ router.use(authenticate);
 // @desc    Create new order
 // @access  Private
 router.post('/', validate(schemas.createOrder), async (req, res) => {
-    try {
-        const { items, shippingAddress, paymentMethod, deliverySlot } = req.body;
+    const { items, shippingAddress, paymentMethod, deliverySlot } = req.body;
 
-        // Calculate total and verify stock
-        let subtotal = 0;
-        const orderItems = [];
+    let attempts = 0;
+    const maxAttempts = 10;
 
-        for (const item of items) {
-            const product = await Product.findById(item.product);
+    while (attempts < maxAttempts) {
+        attempts++;
+        let session;
+        let useTransaction = true;
 
-            if (!product) {
-                return errorResponse(res, `Product not found: ${item.product}`, 404);
-            }
-
-            let price = product.price;
-            let variation = item.variation;
-
-            // If item has a variation, try to find it in product variants to get the correct price
-            if (variation && product.variants && product.variants.length > 0) {
-                const variant = product.variants.find(v => v.size === variation);
-                if (variant) {
-                    price = variant.price;
-                    // Check variant stock if needed (future improvement)
+        try {
+            session = await mongoose.startSession();
+            try {
+                session.startTransaction();
+                console.log(`[TxLog] Transaction started successfully (Attempt ${attempts}, Mode: Transactional)`);
+            } catch (txErr) {
+                if (process.env.NODE_ENV === 'production') {
+                    console.error('❌ Critical: Database transactions are required in production but session.startTransaction() failed:', txErr.message);
+                    throw txErr;
                 }
+                console.warn('⚠️ Warning: Transactions unsupported in this environment. Falling back to non-transactional mode:', txErr.message);
+                useTransaction = false;
             }
-
-            if (product.stock.trackInventory && product.stock.quantity < item.quantity) {
-                return errorResponse(res, `Insufficient stock for product: ${product.name}`, 400);
+        } catch (sErr) {
+            if (process.env.NODE_ENV === 'production') {
+                console.error('❌ Critical: Database session creation failed in production:', sErr.message);
+                throw sErr;
             }
-
-            const itemSubtotal = price * item.quantity;
-
-            orderItems.push({
-                product: product._id,
-                name: product.name,
-                sku: product.sku || '',
-                quantity: item.quantity,
-                price: price,
-                variation: variation,
-                subtotal: itemSubtotal
-            });
-
-            subtotal += itemSubtotal;
-
-            // Update stock
-            if (product.stock.trackInventory) {
-                await product.updateStock(item.quantity, 'subtract');
-            }
+            console.warn('⚠️ Warning: Mongoose session creation failed:', sErr.message);
+            session = null;
+            useTransaction = false;
         }
 
-        // Calculate tax and shipping
-        const tax = 0; // Add tax calculation logic if needed
-        const shipping = subtotal >= 500 ? 0 : 50; // Free shipping over 500
-        const total = subtotal + tax + shipping;
+        console.log(`[TxLog] Request executing with useTransaction = ${useTransaction}`);
 
-        // Find or create Customer for this user
-        let customer = await Customer.findOne({ userId: req.user._id });
-        if (!customer) {
-            // Determine firstName with fallbacks
-            let firstName = req.user.firstName || req.user.name?.split(' ')[0] || '';
-            let lastName = req.user.lastName || req.user.name?.split(' ').slice(1).join(' ') || '';
+        const sessionOptions = (useTransaction && session && session.inTransaction()) ? { session } : {};
 
-            // If still no name, use email prefix or phone as identifier
-            if (!firstName && !lastName) {
-                if (req.user.email) {
-                    firstName = req.user.email.split('@')[0];
-                } else if (req.user.phone) {
-                    firstName = req.user.phone;
+        try {
+            let subtotal = 0;
+            const orderItems = [];
+
+            for (const item of items) {
+                const product = await Product.findById(item.product, null, sessionOptions);
+
+                if (!product) {
+                    const err = new Error(`Product not found: ${item.product}`);
+                    err.status = 404;
+                    throw err;
                 }
+
+                let price = product.price;
+                let variation = item.variation;
+                let glazing = item.glazing;
+                let glazingPrices = product.glazingPrices;
+
+                if (variation && product.variants && product.variants.length > 0) {
+                    const variant = product.variants.find(v => v.size === variation);
+                    if (variant) {
+                        price = variant.price;
+                        if (variant.glazingPrices && (variant.glazingPrices.glazing20 || variant.glazingPrices.glazing30 || variant.glazingPrices.glazing50)) {
+                            glazingPrices = variant.glazingPrices;
+                        }
+                    }
+                }
+
+                if (glazing && glazingPrices) {
+                    if (glazing === 20 && glazingPrices.glazing20) price = glazingPrices.glazing20;
+                    else if (glazing === 30 && glazingPrices.glazing30) price = glazingPrices.glazing30;
+                    else if (glazing === 50 && glazingPrices.glazing50) price = glazingPrices.glazing50;
+                }
+
+                const itemSubtotal = price * item.quantity;
+
+                // Atomic stock decrement with $gte check
+                if (product.stock && product.stock.trackInventory) {
+                    let filter, update;
+
+                    if (variation && product.variants && product.variants.some(v => v.size === variation)) {
+                        filter = {
+                            _id: item.product,
+                            'stock.trackInventory': true,
+                            'stock.quantity': { $gte: item.quantity },
+                            variants: {
+                                $elemMatch: {
+                                    size: variation,
+                                    stock: { $gte: item.quantity }
+                                }
+                            }
+                        };
+                        update = {
+                            $inc: {
+                                'stock.quantity': -item.quantity,
+                                'variants.$.stock': -item.quantity,
+                                totalSold: item.quantity
+                            }
+                        };
+                    } else {
+                        filter = {
+                            _id: item.product,
+                            'stock.trackInventory': true,
+                            'stock.quantity': { $gte: item.quantity }
+                        };
+                        update = {
+                            $inc: {
+                                'stock.quantity': -item.quantity,
+                                totalSold: item.quantity
+                            }
+                        };
+                    }
+
+                    const updatedProduct = await Product.findOneAndUpdate(filter, update, { new: true, ...sessionOptions });
+
+                    if (!updatedProduct) {
+                        const err = new Error(`Insufficient stock for product: ${product.name}${variation ? ` (${variation})` : ''}`);
+                        err.status = 409;
+                        throw err;
+                    }
+                } else {
+                    await Product.findByIdAndUpdate(item.product, { $inc: { totalSold: item.quantity } }, sessionOptions);
+                }
+
+                orderItems.push({
+                    product: product._id,
+                    name: product.name,
+                    sku: product.sku || '',
+                    quantity: item.quantity,
+                    price: price,
+                    variation: variation,
+                    glazing: glazing,
+                    subtotal: itemSubtotal
+                });
+
+                subtotal += itemSubtotal;
             }
 
-            // Create customer if doesn't exist
-            customer = await Customer.create({
-                userId: req.user._id,
-                firstName: firstName || 'Customer',
-                lastName: lastName || '',
-                phone: req.user.phone || '',
-                email: req.user.email || '',
-                totalOrders: 0,
-                totalSpent: 0
-            });
+            const tax = 0;
+            const shipping = subtotal >= 500 ? 0 : 50;
+            const total = subtotal + tax + shipping;
+
+            let customer = await Customer.findOne({ userId: req.user._id }, null, sessionOptions);
+            if (!customer) {
+                let firstName = req.user.firstName || req.user.name?.split(' ')[0] || '';
+                let lastName = req.user.lastName || req.user.name?.split(' ').slice(1).join(' ') || '';
+
+                if (!firstName && !lastName) {
+                    if (req.user.email) {
+                        firstName = req.user.email.split('@')[0];
+                    } else if (req.user.phone) {
+                        firstName = req.user.phone;
+                    }
+                }
+
+                const [newCustomer] = await Customer.create([{
+                    userId: req.user._id,
+                    firstName: firstName || 'Customer',
+                    lastName: lastName || '',
+                    phone: req.user.phone || '',
+                    email: req.user.email || '',
+                    totalOrders: 0,
+                    totalSpent: 0
+                }], sessionOptions);
+                customer = newCustomer;
+            }
+
+            // Update customer stats
+            customer.totalOrders = (customer.totalOrders || 0) + 1;
+            customer.totalSpent = (customer.totalSpent || 0) + total;
+            customer.averageOrderValue = Number((customer.totalSpent / customer.totalOrders).toFixed(2));
+            customer.lastOrderDate = new Date();
+            await customer.save(sessionOptions);
+
+            const [order] = await Order.create([{
+                customer: customer._id,
+                items: orderItems,
+                subtotal,
+                tax,
+                shipping,
+                total,
+                shippingAddress,
+                paymentMethod,
+                deliverySlot,
+                status: 'pending',
+                paymentStatus: 'pending'
+            }], sessionOptions);
+
+            if (useTransaction && session && session.inTransaction()) {
+                await session.commitTransaction();
+            }
+            if (session) {
+                session.endSession();
+            }
+
+            return successResponse(res, { order }, 'Order placed successfully', 201);
+        } catch (error) {
+            if (useTransaction && session && session.inTransaction()) {
+                await session.abortTransaction();
+            }
+            if (session) {
+                session.endSession();
+            }
+
+            // Immediate abort for business rule failures (404, 409)
+            if (error.status) {
+                return errorResponse(res, error.message, error.status);
+            }
+
+            // Retry for TransientTransactionError with randomized backoff
+            const isTransientError = error.hasErrorLabel && error.hasErrorLabel('TransientTransactionError');
+            if (isTransientError && attempts < maxAttempts) {
+                console.warn(`[TxLog] TransientTransactionError on attempt ${attempts}, retrying in backoff...`);
+                await new Promise(res => setTimeout(res, Math.floor(Math.random() * 30) + 10));
+                continue;
+            }
+
+            console.error('Create order error:', error);
+            return errorResponse(res, error.message || 'Failed to create order', 500);
         }
-
-        // Create order
-        const order = await Order.create({
-            customer: customer._id,
-            items: orderItems,
-            subtotal,
-            tax,
-            shipping,
-            total,
-            shippingAddress,
-            paymentMethod,
-            deliverySlot,
-            status: 'pending',
-            paymentStatus: 'pending'
-        });
-
-        successResponse(res, { order }, 'Order placed successfully', 201);
-    } catch (error) {
-        console.error('Create order error:', error);
-        errorResponse(res, 'Failed to create order', 500);
     }
 });
 

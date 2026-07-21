@@ -24,6 +24,15 @@ Express.js backend API for JHOM FOODS e-commerce platform.
 
 ## Change Log
 
+### 2026-02-12 @ 19:35 IST - Legacy Customer Migration Script
+
+#### ✨ Added
+- `scripts/link-customers-to-users.js` - Migration script to link legacy Customer records to User accounts.
+- Matches Users to Customers by email (case-insensitive).
+- Updates `Customer.userId` if it matches a User and is currently unlinked.
+
+---
+
 ### 2026-02-12 @ 17:20 IST - Pieces per KG Feature
 
 #### ✨ Added

@@ -161,12 +161,26 @@ productSchema.virtual('discountPercentage').get(function () {
 });
 
 // Method to update stock
-productSchema.methods.updateStock = async function (quantity, operation = 'subtract') {
+productSchema.methods.updateStock = async function (quantity, operation = 'subtract', variation = null) {
     if (operation === 'subtract') {
         this.stock.quantity -= quantity;
         this.totalSold += quantity;
+
+        if (variation && this.variants && this.variants.length > 0) {
+            const variant = this.variants.find(v => v.size === variation);
+            if (variant && typeof variant.stock === 'number') {
+                variant.stock -= quantity;
+            }
+        }
     } else {
         this.stock.quantity += quantity;
+
+        if (variation && this.variants && this.variants.length > 0) {
+            const variant = this.variants.find(v => v.size === variation);
+            if (variant && typeof variant.stock === 'number') {
+                variant.stock += quantity;
+            }
+        }
     }
     await this.save();
 };
