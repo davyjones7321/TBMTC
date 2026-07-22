@@ -107,11 +107,8 @@ router.get('/:id', async (req, res) => {
 // @access  Private/Super Admin
 router.put('/:id/role', async (req, res) => {
     try {
-        // Super admin email - only this user can manage roles
-        const SUPER_ADMIN_EMAIL = 'khader7321@gmail.com';
-
         // Check if current user is super admin
-        if (req.user.email !== SUPER_ADMIN_EMAIL) {
+        if (!req.user.isSuperAdmin) {
             return errorResponse(res, 'Only the super admin can manage user roles', 403);
         }
 
@@ -128,7 +125,7 @@ router.put('/:id/role', async (req, res) => {
         }
 
         // Prevent changing super admin's role
-        if (user.email === SUPER_ADMIN_EMAIL) {
+        if (user.isSuperAdmin) {
             return errorResponse(res, 'Cannot modify super admin role', 400);
         }
 
@@ -147,7 +144,6 @@ router.put('/:id/role', async (req, res) => {
 // @access  Private/Admin
 router.put('/:id/status', async (req, res) => {
     try {
-        const SUPER_ADMIN_EMAIL = 'khader7321@gmail.com';
         const { isActive } = req.body;
 
         const user = await User.findById(req.params.id);
@@ -157,7 +153,7 @@ router.put('/:id/status', async (req, res) => {
         }
 
         // Prevent modifying super admin status
-        if (user.email === SUPER_ADMIN_EMAIL) {
+        if (user.isSuperAdmin) {
             return errorResponse(res, 'Cannot modify super admin status', 400);
         }
 
@@ -185,6 +181,11 @@ router.delete('/:id', async (req, res) => {
 
         if (!user) {
             return errorResponse(res, 'User not found', 404);
+        }
+
+        // Prevent deleting super admin
+        if (user.isSuperAdmin) {
+            return errorResponse(res, 'Cannot delete super admin account', 403);
         }
 
         // Prevent deleting yourself

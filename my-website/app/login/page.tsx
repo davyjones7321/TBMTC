@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/app/context/AuthContext';
@@ -17,18 +17,19 @@ export default function LoginPage() {
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
-    // Redirect if already logged in
-    if (authLoading) {
+    // Redirect if already logged in (after render)
+    useEffect(() => {
+        if (!authLoading && isAuthenticated) {
+            router.push('/');
+        }
+    }, [isAuthenticated, authLoading, router]);
+
+    if (authLoading || isAuthenticated) {
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <div className="animate-spin rounded-full h-12 w-12 border-4 border-cyan-600 border-t-transparent"></div>
             </div>
         );
-    }
-
-    if (isAuthenticated) {
-        router.push('/');
-        return null;
     }
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -61,13 +62,21 @@ export default function LoginPage() {
             <div className="max-w-md w-full">
                 {/* Header */}
                 <div className="text-center mb-8">
-                    <Link href="/" className="inline-block">
-                        <h1
-                            className="text-3xl font-bold text-cyan-600"
+                    <Link href="/" className="inline-flex items-center gap-3">
+                        <img
+                            src="/images/LOGO.png"
+                            alt="The Bangalore Meat & Trading Company Logo"
+                            className="h-12 w-auto object-contain"
+                        />
+                        <span
+                            className="text-lg font-extrabold text-[#570C19] text-left leading-tight"
                             style={{ fontFamily: 'var(--font-display)' }}
                         >
-                            JHOM FOODS
-                        </h1>
+                            THE BANGALORE
+                            <span className="block text-xs font-semibold text-gray-700 tracking-wider">
+                                MEAT & TRADING CO.
+                            </span>
+                        </span>
                     </Link>
                     <h2 className="mt-6 text-2xl font-bold text-gray-900">
                         Welcome back

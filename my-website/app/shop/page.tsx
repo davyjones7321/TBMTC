@@ -64,16 +64,16 @@ export default function ShopPage() {
     return (
         <>
             {/* Hero */}
-            <section className="pt-32 pb-16 bg-gradient-to-br from-cyan-800 to-cyan-900 text-white">
+            <section className="pt-32 pb-16 text-white" style={{ backgroundColor: '#570C19' }}>
                 <div className="container">
                     <div className="max-w-2xl">
                         <h1
                             className="text-4xl lg:text-5xl font-bold mb-4"
-                            style={{ fontFamily: 'var(--font-display)' }}
+                            style={{ fontFamily: 'var(--font-display)', color: '#F5DDE1' }}
                         >
                             Shop Now
                         </h1>
-                        <p className="text-lg" style={{ color: '#000000' }}>
+                        <p className="text-lg" style={{ color: '#E8C4CA' }}>
                             Premium quality meat and seafood, handpicked for excellence and delivered to your door.
                         </p>
                     </div>
@@ -81,15 +81,16 @@ export default function ShopPage() {
             </section>
 
             {/* Category Filter */}
-            <section className="py-8 bg-white border-b sticky top-20 z-30">
+            <section className="py-8 border-b sticky top-20 z-30" style={{ backgroundColor: '#faf6f1' }}>
                 <div className="container">
                     <div className="flex items-center gap-3 overflow-x-auto pb-2 -mb-2">
                         <button
                             onClick={() => setSelectedCategory(null)}
                             className={`flex-shrink-0 px-5 py-2.5 rounded-full font-medium text-sm transition-colors ${!selectedCategory
-                                ? 'bg-cyan-600 text-white'
-                                : 'bg-gray-100 text-gray-700 hover:bg-cyan-100 hover:text-cyan-700'
+                                ? 'text-white'
+                                : 'bg-gray-100 text-gray-700 hover:bg-[#570C19]/10 hover:text-[#570C19]'
                                 }`}
+                            style={!selectedCategory ? { backgroundColor: '#570C19', color: '#F5DDE1' } : undefined}
                         >
                             All Products
                         </button>
@@ -98,9 +99,10 @@ export default function ShopPage() {
                                 key={category.id}
                                 onClick={() => setSelectedCategory(category.name)}
                                 className={`flex-shrink-0 flex items-center gap-2 px-5 py-2.5 rounded-full font-medium text-sm transition-colors ${selectedCategory === category.name
-                                    ? 'bg-cyan-600 text-white'
-                                    : 'bg-gray-100 text-gray-700 hover:bg-cyan-100 hover:text-cyan-700'
+                                    ? 'text-white'
+                                    : 'bg-gray-100 text-gray-700 hover:bg-[#570C19]/10 hover:text-[#570C19]'
                                     }`}
+                                style={selectedCategory === category.name ? { backgroundColor: '#570C19', color: '#F5DDE1' } : undefined}
                             >
                                 <span>{category.icon}</span>
                                 {category.name}
@@ -179,7 +181,7 @@ export default function ShopPage() {
             </section>
 
             {/* Newsletter */}
-            <section className="section bg-cyan-50">
+            <section className="section" style={{ backgroundColor: '#faf6f1' }}>
                 <div className="container">
                     <div className="max-w-2xl mx-auto text-center">
                         <h2

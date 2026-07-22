@@ -1,8 +1,8 @@
 import Link from 'next/link';
 
 export const metadata = {
-    title: 'Terms of Service - JHOM FOODS',
-    description: 'Read the terms and conditions governing your use of JHOM FOODS services.',
+    title: 'Terms of Service - THE BANGALORE MEAT AND TRADING COMPANY',
+    description: 'Read the terms and conditions governing your use of THE BANGALORE MEAT AND TRADING COMPANY services.',
 };
 
 export default function TermsOfServicePage() {

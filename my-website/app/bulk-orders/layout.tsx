@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: 'Bulk Orders - JHOM FOODS',
+    title: 'Bulk Orders - THE BANGALORE MEAT AND TRADING COMPANY',
     description: 'Special pricing for restaurants, hotels, and catering services. Get a quote for bulk orders.',
 };
 

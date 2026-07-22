@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
 export const metadata = {
-    title: 'Sustainability - JHOM FOODS',
+    title: 'Sustainability - THE BANGALORE MEAT AND TRADING COMPANY',
     description: 'Our commitment to sustainable practices, ethical sourcing, and environmental responsibility.',
 };
 
@@ -9,23 +9,23 @@ export default function SustainabilityPage() {
     return (
         <>
             {/* Hero */}
-            <section className="relative pt-32 pb-24 bg-gradient-to-br from-cyan-800 via-cyan-700 to-cyan-900 text-white overflow-hidden">
+            <section className="relative pt-32 pb-24 text-white overflow-hidden" style={{ backgroundColor: '#570C19' }}>
                 <div className="absolute inset-0 opacity-10">
                     <div className="absolute top-20 right-20 w-96 h-96 bg-white rounded-full blur-3xl" />
                     <div className="absolute bottom-20 left-20 w-80 h-80 bg-white rounded-full blur-3xl" />
                 </div>
                 <div className="container relative">
                     <div className="max-w-3xl mx-auto text-center">
-                        <span className="inline-block px-4 py-2 bg-white/20 rounded-full text-sm font-semibold mb-6">
+                        <span className="inline-block px-4 py-2 rounded-full text-sm font-semibold mb-6" style={{ backgroundColor: 'rgba(255,255,255,0.15)', color: '#F5DDE1' }}>
                             SUSTAINABILITY
                         </span>
                         <h1
                             className="text-4xl lg:text-6xl font-bold mb-6"
-                            style={{ fontFamily: 'var(--font-display)' }}
+                            style={{ fontFamily: 'var(--font-display)', color: '#F5DDE1' }}
                         >
                             Better for you and the planet
                         </h1>
-                        <p className="text-lg lg:text-xl text-white">
+                        <p className="text-lg lg:text-xl" style={{ color: '#E8C4CA' }}>
                             Our commitment to sustainable practices that protect our environment for future generations.
                         </p>
                     </div>
@@ -75,7 +75,7 @@ export default function SustainabilityPage() {
                                 key={index}
                                 className="bg-gray-50 rounded-2xl p-8 hover:shadow-lg transition-shadow"
                             >
-                                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-100 to-cyan-200 flex items-center justify-center mb-6">
+                                <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6" style={{ backgroundColor: '#FAEFF1' }}>
                                     <span className="text-4xl">{item.icon}</span>
                                 </div>
                                 <h3
@@ -89,7 +89,8 @@ export default function SustainabilityPage() {
                                     {item.details.map((detail, i) => (
                                         <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
                                             <svg
-                                                className="h-5 w-5 text-cyan-500 flex-shrink-0"
+                                                className="h-5 w-5 flex-shrink-0"
+                                                style={{ color: '#570C19' }}
                                                 fill="none"
                                                 viewBox="0 0 24 24"
                                                 stroke="currentColor"
@@ -108,12 +109,12 @@ export default function SustainabilityPage() {
             </section>
 
             {/* Impact Stats */}
-            <section className="section bg-cyan-600 text-white">
+            <section className="section text-white" style={{ backgroundColor: '#570C19' }}>
                 <div className="container">
                     <div className="text-center mb-12">
                         <h2
                             className="text-3xl lg:text-4xl font-bold"
-                            style={{ fontFamily: 'var(--font-display)' }}
+                            style={{ fontFamily: 'var(--font-display)', color: '#F5DDE1' }}
                         >
                             Our Impact
                         </h2>
@@ -126,8 +127,8 @@ export default function SustainabilityPage() {
                             { value: '25%', label: 'Carbon reduction achieved' },
                         ].map((stat, index) => (
                             <div key={index}>
-                                <div className="text-3xl lg:text-4xl font-bold mb-2">{stat.value}</div>
-                                <div className="text-white text-sm">{stat.label}</div>
+                                <div className="text-3xl lg:text-4xl font-bold mb-2" style={{ color: '#F5DDE1' }}>{stat.value}</div>
+                                <div className="text-sm" style={{ color: '#E8C4CA' }}>{stat.label}</div>
                             </div>
                         ))}
                     </div>
@@ -160,12 +161,12 @@ export default function SustainabilityPage() {
                                 <div key={index} className="bg-white rounded-xl p-6 shadow-md">
                                     <div className="flex justify-between items-center mb-3">
                                         <span className="font-semibold text-gray-900">{item.goal}</span>
-                                        <span className="text-cyan-600 font-bold">{item.progress}%</span>
+                                        <span className="font-bold" style={{ color: '#570C19' }}>{item.progress}%</span>
                                     </div>
                                     <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
                                         <div
-                                            className="h-full bg-gradient-to-r from-cyan-500 to-cyan-400 rounded-full transition-all duration-500"
-                                            style={{ width: `${item.progress}%` }}
+                                            className="h-full rounded-full transition-all duration-500"
+                                            style={{ width: `${item.progress}%`, backgroundColor: '#570C19' }}
                                         />
                                     </div>
                                 </div>

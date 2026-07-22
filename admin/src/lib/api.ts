@@ -39,7 +39,7 @@ apiClient.interceptors.response.use(
 // Auth API
 export const authApi = {
     login: async (email: string, password: string): Promise<ApiResponse<AuthResponse>> => {
-        const { data } = await apiClient.post('/api/auth/login', { email, password });
+        const { data } = await apiClient.post('/api/auth/admin/login', { email, password });
         return data;
     },
 

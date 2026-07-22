@@ -25,24 +25,30 @@ const generateRefreshToken = (userId) => {
 };
 
 // @route   POST /api/auth/login
-// @desc    Login user with email or phone
+// @desc    Login customer with email or phone
 // @access  Public
 router.post('/login', validate(schemas.login), async (req, res) => {
     try {
         const { email, phone, password } = req.body;
 
         // Find user by email or phone
-        const query = email ? { email } : { phone };
+        const query = email ? { email: email.toLowerCase() } : { phone };
         const user = await User.findOne(query).select('+password');
 
         if (!user) {
             return errorResponse(res, 'Invalid credentials', 401);
         }
 
+        // Restrict /login to customer role only
+        if (user.role !== 'customer') {
+            return errorResponse(res, 'Access denied. Please use the admin portal to log in.', 403);
+        }
+
         // Check if user is active
         if (!user.isActive) {
             return errorResponse(res, 'Account is deactivated', 403);
         }
+
         // Verify password
         const isPasswordValid = await user.comparePassword(password);
 
@@ -59,7 +65,7 @@ router.post('/login', validate(schemas.login), async (req, res) => {
             user: user._id,
             action: 'login',
             resource: 'auth',
-            description: `User logged in with ${email ? 'email' : 'phone'}`,
+            description: `Customer logged in with ${email ? 'email' : 'phone'}`,
             ipAddress: req.ip || req.connection.remoteAddress,
             userAgent: req.get('user-agent')
         });
@@ -68,16 +74,9 @@ router.post('/login', validate(schemas.login), async (req, res) => {
         const token = generateToken(user._id);
         const refreshToken = generateRefreshToken(user._id);
 
-        // Remove password from response
+        // Prepare response with direct DB read of isSuperAdmin
         const userResponse = user.toJSON();
-
-        // Check for Super Admin
-        const SUPER_ADMIN_EMAIL = process.env.DEFAULT_ADMIN_EMAIL;
-        if (SUPER_ADMIN_EMAIL && user.email === SUPER_ADMIN_EMAIL) {
-            userResponse.isSuperAdmin = true;
-        } else {
-            userResponse.isSuperAdmin = false;
-        }
+        userResponse.isSuperAdmin = !!user.isSuperAdmin;
 
         successResponse(res, {
             user: userResponse,
@@ -85,8 +84,73 @@ router.post('/login', validate(schemas.login), async (req, res) => {
             refreshToken
         }, 'Login successful');
     } catch (error) {
-        console.error('Login error:', error);
+        console.error('Customer login error:', error);
         errorResponse(res, 'Login failed', 500);
+    }
+});
+
+// @route   POST /api/auth/admin/login
+// @desc    Login admin or super admin
+// @access  Public
+router.post('/admin/login', validate(schemas.login), async (req, res) => {
+    try {
+        const { email, phone, password } = req.body;
+
+        // Find user by email or phone
+        const query = email ? { email: email.toLowerCase() } : { phone };
+        const user = await User.findOne(query).select('+password');
+
+        if (!user) {
+            return errorResponse(res, 'Invalid credentials', 401);
+        }
+
+        // Restrict /admin/login to admin role only
+        if (user.role !== 'admin') {
+            return errorResponse(res, 'Access denied. Admin portal is restricted to authorized staff.', 403);
+        }
+
+        // Check if user is active
+        if (!user.isActive) {
+            return errorResponse(res, 'Account is deactivated', 403);
+        }
+
+        // Verify password
+        const isPasswordValid = await user.comparePassword(password);
+
+        if (!isPasswordValid) {
+            return errorResponse(res, 'Invalid credentials', 401);
+        }
+
+        // Update last login
+        user.lastLogin = new Date();
+        await user.save();
+
+        // Create audit log
+        await AuditLog.create({
+            user: user._id,
+            action: 'login',
+            resource: 'auth',
+            description: `Admin logged in with ${email ? 'email' : 'phone'}`,
+            ipAddress: req.ip || req.connection.remoteAddress,
+            userAgent: req.get('user-agent')
+        });
+
+        // Generate tokens
+        const token = generateToken(user._id);
+        const refreshToken = generateRefreshToken(user._id);
+
+        // Prepare response with direct DB read of isSuperAdmin
+        const userResponse = user.toJSON();
+        userResponse.isSuperAdmin = !!user.isSuperAdmin;
+
+        successResponse(res, {
+            user: userResponse,
+            token,
+            refreshToken
+        }, 'Admin login successful');
+    } catch (error) {
+        console.error('Admin login error:', error);
+        errorResponse(res, 'Admin login failed', 500);
     }
 });
 
@@ -100,7 +164,7 @@ router.post('/signup', validate(schemas.register), async (req, res) => {
         // Check if user already exists by email or phone
         const existingUser = await User.findOne({
             $or: [
-                email ? { email } : null,
+                email ? { email: email.toLowerCase() } : null,
                 phone ? { phone } : null
             ].filter(Boolean)
         });
@@ -118,14 +182,15 @@ router.post('/signup', validate(schemas.register), async (req, res) => {
             lastName = nameParts.slice(1).join(' ') || '';
         }
 
-        // Create new user (force role to customer)
+        // Create new user (force role to customer, isSuperAdmin: false)
         const user = await User.create({
-            email,
+            email: email ? email.toLowerCase() : undefined,
             phone,
             password,
             firstName,
             lastName,
-            role: 'customer'
+            role: 'customer',
+            isSuperAdmin: false
         });
 
         // Create audit log
@@ -142,8 +207,11 @@ router.post('/signup', validate(schemas.register), async (req, res) => {
         const token = generateToken(user._id);
         const refreshToken = generateRefreshToken(user._id);
 
+        const userResponse = user.toJSON();
+        userResponse.isSuperAdmin = false;
+
         successResponse(res, {
-            user: user.toJSON(),
+            user: userResponse,
             token,
             refreshToken
         }, 'Registration successful', 201);
@@ -158,12 +226,11 @@ router.post('/signup', validate(schemas.register), async (req, res) => {
 // @access  Private/Super Admin
 router.post('/register', authenticate, validate(schemas.register), async (req, res) => {
     try {
-        const SUPER_ADMIN_EMAIL = process.env.DEFAULT_ADMIN_EMAIL;
         const { email, phone, password, name, role } = req.body;
 
         // If creating an admin, only super admin can do it
         if (role === 'admin') {
-            if (!SUPER_ADMIN_EMAIL || req.user.email !== SUPER_ADMIN_EMAIL) {
+            if (!req.user.isSuperAdmin) {
                 return errorResponse(res, 'Only the super admin can create new admin users', 403);
             }
         } else {
@@ -176,7 +243,7 @@ router.post('/register', authenticate, validate(schemas.register), async (req, r
         // Check if user already exists by email or phone
         const existingUser = await User.findOne({
             $or: [
-                email ? { email } : null,
+                email ? { email: email.toLowerCase() } : null,
                 phone ? { phone } : null
             ].filter(Boolean)
         });
@@ -196,12 +263,13 @@ router.post('/register', authenticate, validate(schemas.register), async (req, r
 
         // Create new user
         const user = await User.create({
-            email,
+            email: email ? email.toLowerCase() : undefined,
             phone,
             password,
             firstName,
             lastName,
-            role
+            role,
+            isSuperAdmin: false
         });
 
         // Create audit log
@@ -215,7 +283,10 @@ router.post('/register', authenticate, validate(schemas.register), async (req, r
             userAgent: req.get('user-agent')
         });
 
-        successResponse(res, { user: user.toJSON() }, 'User created successfully', 201);
+        const userResponse = user.toJSON();
+        userResponse.isSuperAdmin = !!user.isSuperAdmin;
+
+        successResponse(res, { user: userResponse }, 'User created successfully', 201);
     } catch (error) {
         console.error('Registration error:', error);
         errorResponse(res, 'Registration failed', 500);
@@ -259,14 +330,7 @@ router.post('/refresh', async (req, res) => {
 router.get('/me', authenticate, async (req, res) => {
     try {
         const userResponse = req.user.toJSON();
-
-        // Check for Super Admin
-        const SUPER_ADMIN_EMAIL = process.env.SUPER_ADMIN_EMAIL;
-        if (SUPER_ADMIN_EMAIL && req.user.email === SUPER_ADMIN_EMAIL) {
-            userResponse.isSuperAdmin = true;
-        } else {
-            userResponse.isSuperAdmin = false;
-        }
+        userResponse.isSuperAdmin = !!req.user.isSuperAdmin;
 
         successResponse(res, { user: userResponse }, 'User profile retrieved');
     } catch (error) {

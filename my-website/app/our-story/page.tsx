@@ -2,7 +2,7 @@ import Link from 'next/link';
 import StorySection from '@/app/components/StorySection';
 
 export const metadata = {
-    title: 'Our Story - JHOM FOODS',
+    title: 'Our Story - THE BANGALORE MEAT AND TRADING COMPANY',
     description: 'Learn about our mission to create meaningful connections between farmers and customers through quality, transparency, and sustainability.',
 };
 
@@ -43,23 +43,23 @@ export default function OurStoryPage() {
     return (
         <>
             {/* Hero */}
-            <section className="relative pt-32 pb-24 bg-gradient-to-br from-cyan-800 via-cyan-700 to-cyan-900 text-white overflow-hidden">
+            <section className="relative pt-32 pb-24 text-white overflow-hidden" style={{ backgroundColor: '#570C19' }}>
                 <div className="absolute inset-0 opacity-10">
                     <div className="absolute top-20 right-20 w-96 h-96 bg-white rounded-full blur-3xl" />
                     <div className="absolute bottom-20 left-20 w-80 h-80 bg-white rounded-full blur-3xl" />
                 </div>
                 <div className="container relative">
                     <div className="max-w-3xl mx-auto text-center">
-                        <span className="inline-block px-4 py-2 bg-white/20 rounded-full text-sm font-semibold mb-6">
+                        <span className="inline-block px-4 py-2 rounded-full text-sm font-semibold mb-6" style={{ backgroundColor: 'rgba(255,255,255,0.15)', color: '#F5DDE1' }}>
                             OUR STORY
                         </span>
                         <h1
                             className="text-4xl lg:text-6xl font-bold mb-6"
-                            style={{ fontFamily: 'var(--font-display)' }}
+                            style={{ fontFamily: 'var(--font-display)', color: '#F5DDE1' }}
                         >
                             Creating meaningful connections through food
                         </h1>
-                        <p className="text-lg lg:text-xl" style={{ color: '#000000' }}>
+                        <p className="text-lg lg:text-xl" style={{ color: '#E8C4CA' }}>
                             We believe in knowing where your food comes from and the people who produce it.
                         </p>
                     </div>
@@ -77,7 +77,7 @@ export default function OurStoryPage() {
                             &ldquo;We believe in creating a meaningful connection between you and the food you eat.&rdquo;
                         </h2>
                         <p className="text-lg text-gray-600 leading-relaxed">
-                            At JHOM FOODS, we&apos;re not just delivering meat and seafood—we&apos;re building bridges between
+                            At The Bangalore Meat & Trading Company, we&apos;re not just delivering meat and seafood—we&apos;re building bridges between
                             conscious consumers and ethical producers. Every product tells a story of dedication,
                             sustainability, and exceptional quality.
                         </p>
@@ -89,11 +89,11 @@ export default function OurStoryPage() {
             <StorySection
                 heading="How it all started"
                 content={[
-                    "JHOM FOODS was born from a simple belief: everyone deserves access to high-quality, ethically sourced meat and seafood. We saw a food system that was broken—disconnected from the farmers who work tirelessly and the customers who deserve transparency.",
+                    "The Bangalore Meat & Trading Company was born from a simple belief: everyone deserves access to high-quality, ethically sourced meat and seafood. We saw a food system that was broken—disconnected from the farmers who work tirelessly and the customers who deserve transparency.",
                     "In 2024, we set out to change that. Starting from Bangalore, we built direct relationships with small, independent farms and fisheries who shared our values. Today, we're proud to serve thousands of families who trust us with their food.",
                 ]}
                 image="🌱"
-                imageAlt="The beginning of JHOM FOODS"
+                imageAlt="The beginning of The Bangalore Meat & Trading Company"
                 imagePosition="right"
             />
 
@@ -102,12 +102,12 @@ export default function OurStoryPage() {
                     heading="Our Mission"
                     content={[
                         "We're on a mission to transform how people buy and think about meat and seafood. By connecting customers directly with producers, we ensure fair prices for farmers and premium quality for families.",
-                        "Every product we sell is fully traceable. We want you to know the farm, the farmer, and the journey your food took to reach your table. That's the JHOM FOODS promise.",
+                        "Every product we sell is fully traceable. We want you to know the farm, the farmer, and the journey your food took to reach your table. That's The Bangalore Meat & Trading Company promise.",
                     ]}
                     image="🎯"
                     imageAlt="Our mission"
                     imagePosition="left"
-                    cta={{ text: 'Learn About Our Quality', href: '/quality' }}
+                    cta={{ text: 'View Certifications', href: '/certifications' }}
                 />
             </div>
 
@@ -124,10 +124,10 @@ export default function OurStoryPage() {
             />
 
             {/* Core Values */}
-            <section className="section bg-cyan-50">
+            <section className="section" style={{ backgroundColor: '#faf6f1' }}>
                 <div className="container">
                     <div className="text-center mb-16">
-                        <span className="inline-block px-4 py-2 bg-cyan-200 text-cyan-800 rounded-full text-sm font-semibold mb-4">
+                        <span className="inline-block px-4 py-2 rounded-full text-sm font-semibold mb-4" style={{ backgroundColor: '#570C19', color: '#F5DDE1' }}>
                             WHAT WE STAND FOR
                         </span>
                         <h2
@@ -144,7 +144,7 @@ export default function OurStoryPage() {
                                 key={index}
                                 className="bg-white rounded-2xl p-6 shadow-md hover:shadow-lg transition-shadow"
                             >
-                                <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-cyan-100 to-cyan-200 flex items-center justify-center mb-4">
+                                <div className="w-14 h-14 rounded-xl flex items-center justify-center mb-4" style={{ backgroundColor: '#FAEFF1' }}>
                                     <span className="text-3xl">{value.icon}</span>
                                 </div>
                                 <h3 className="text-xl font-bold text-gray-900 mb-2">{value.title}</h3>
@@ -156,27 +156,26 @@ export default function OurStoryPage() {
             </section>
 
             {/* Join Us CTA */}
-            <section className="section bg-black">
+            <section className="section" style={{ backgroundColor: '#faf6f1' }}>
                 <div className="container">
                     <div className="max-w-3xl mx-auto">
-                        {/* Light blue card with blue text */}
-                        <div className="bg-sky-50 rounded-2xl p-8 lg:p-12 text-center">
+                        <div className="rounded-2xl p-8 lg:p-12 text-center" style={{ backgroundColor: '#570C19' }}>
                             <h2
-                                className="text-3xl lg:text-4xl font-bold mb-6 text-sky-600"
-                                style={{ fontFamily: 'var(--font-display)' }}
+                                className="text-3xl lg:text-4xl font-bold mb-6"
+                                style={{ fontFamily: 'var(--font-display)', color: '#F5DDE1' }}
                             >
                                 Join the Food Transparency Movement
                             </h2>
-                            <p className="text-lg text-sky-600 mb-8">
+                            <p className="text-lg mb-8" style={{ color: '#E8C4CA' }}>
                                 Experience the difference of knowing exactly where your food comes from.
                                 Shop with confidence, eat with pride.
                             </p>
                             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                                <Link href="/shop" className="btn btn-lg bg-sky-600 text-white hover:bg-sky-700 font-semibold shadow-lg">
+                                <Link href="/shop" className="btn btn-lg bg-white font-semibold shadow-lg hover:bg-gray-100" style={{ color: '#570C19' }}>
                                     Shop Now
                                 </Link>
-                                <Link href="/quality" className="btn btn-lg border-2 border-sky-600 text-sky-600 hover:bg-sky-600 hover:text-white">
-                                    Our Quality Promise
+                                <Link href="/certifications" className="btn btn-lg border-2 border-white/30 text-white hover:bg-white/10" style={{ color: '#F5DDE1' }}>
+                                    Our Certifications
                                 </Link>
                             </div>
                         </div>

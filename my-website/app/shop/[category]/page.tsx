@@ -19,12 +19,12 @@ export async function generateMetadata({ params }: Props) {
 
     if (!categoryInfo) {
         return {
-            title: 'Category Not Found - JHOM FOODS',
+            title: 'Category Not Found - THE BANGALORE MEAT AND TRADING COMPANY',
         };
     }
 
     return {
-        title: `${categoryInfo.name} - JHOM FOODS`,
+        title: `${categoryInfo.name} - THE BANGALORE MEAT AND TRADING COMPANY`,
         description: categoryInfo.description,
     };
 }

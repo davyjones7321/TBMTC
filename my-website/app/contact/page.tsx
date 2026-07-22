@@ -2,7 +2,7 @@ import ContactForm from '@/app/components/ContactForm';
 import Link from 'next/link';
 
 export const metadata = {
-    title: 'Contact Us - JHOM FOODS',
+    title: 'Contact Us - THE BANGALORE MEAT AND TRADING COMPANY',
     description: 'Get in touch with our team. We\'re here to help with any questions about our products or services.',
 };
 
@@ -10,7 +10,7 @@ export default function ContactPage() {
     return (
         <>
             {/* Hero */}
-            <section className="relative pt-32 pb-16 bg-gradient-to-br from-cyan-800 via-cyan-700 to-cyan-900 text-white overflow-hidden">
+            <section className="relative pt-32 pb-16 text-white overflow-hidden" style={{ backgroundColor: '#570C19' }}>
                 <div className="absolute inset-0 opacity-10">
                     <div className="absolute top-20 right-20 w-96 h-96 bg-white rounded-full blur-3xl" />
                 </div>
@@ -18,11 +18,11 @@ export default function ContactPage() {
                     <div className="max-w-2xl">
                         <h1
                             className="text-4xl lg:text-5xl font-bold mb-4"
-                            style={{ fontFamily: 'var(--font-display)' }}
+                            style={{ fontFamily: 'var(--font-display)', color: '#F5DDE1' }}
                         >
                             Contact Us
                         </h1>
-                        <p className="text-lg" style={{ color: '#000000' }}>
+                        <p className="text-lg" style={{ color: '#E8C4CA' }}>
                             Have questions? We&apos;d love to hear from you. Send us a message and we&apos;ll respond as soon as possible.
                         </p>
                     </div>
@@ -52,9 +52,10 @@ export default function ContactPage() {
                                 {/* Address */}
                                 <div className="bg-white rounded-2xl shadow-md p-6">
                                     <div className="flex items-start gap-4">
-                                        <div className="w-12 h-12 rounded-xl bg-cyan-100 flex items-center justify-center flex-shrink-0">
+                                        <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#FAEFF1' }}>
                                             <svg
-                                                className="h-6 w-6 text-cyan-600"
+                                                className="h-6 w-6"
+                                                style={{ color: '#570C19' }}
                                                 fill="none"
                                                 viewBox="0 0 24 24"
                                                 stroke="currentColor"
@@ -75,7 +76,7 @@ export default function ContactPage() {
                                         <div>
                                             <h3 className="font-semibold text-gray-900 mb-1">Address</h3>
                                             <p className="text-gray-600 text-sm">
-                                                JHOM FOODS Pvt. Ltd.<br />
+                                                THE BANGALORE MEAT AND TRADING COMPANY<br />
                                                 123 Market Lane<br />
                                                 Koramangala, Bangalore<br />
                                                 Karnataka 560034
@@ -87,9 +88,10 @@ export default function ContactPage() {
                                 {/* Email */}
                                 <div className="bg-white rounded-2xl shadow-md p-6">
                                     <div className="flex items-start gap-4">
-                                        <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center flex-shrink-0">
+                                        <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#FAEFF1' }}>
                                             <svg
-                                                className="h-6 w-6 text-blue-600"
+                                                className="h-6 w-6"
+                                                style={{ color: '#570C19' }}
                                                 fill="none"
                                                 viewBox="0 0 24 24"
                                                 stroke="currentColor"
@@ -106,7 +108,8 @@ export default function ContactPage() {
                                             <h3 className="font-semibold text-gray-900 mb-1">Email</h3>
                                             <a
                                                 href="mailto:hello@jhomfoods.com"
-                                                className="text-cyan-600 hover:text-cyan-700 text-sm"
+                                                className="hover:underline text-sm"
+                                                style={{ color: '#570C19' }}
                                             >
                                                 hello@jhomfoods.com
                                             </a>
@@ -139,7 +142,8 @@ export default function ContactPage() {
                                             <h3 className="font-semibold text-gray-900 mb-1">Phone</h3>
                                             <a
                                                 href="tel:+919876543210"
-                                                className="text-cyan-600 hover:text-cyan-700 text-sm"
+                                                className="hover:underline text-sm"
+                                                style={{ color: '#570C19' }}
                                             >
                                                 +91 98765 43210
                                             </a>

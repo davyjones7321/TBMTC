@@ -118,22 +118,22 @@ export default function BulkOrdersPage() {
     return (
         <>
             {/* Hero */}
-            <section className="relative pt-32 pb-16 bg-gradient-to-br from-amber-600 via-orange-600 to-orange-700 text-white overflow-hidden">
+            <section className="relative pt-32 pb-16 text-white overflow-hidden" style={{ backgroundColor: '#570C19' }}>
                 <div className="absolute inset-0 opacity-10">
                     <div className="absolute top-20 right-20 w-96 h-96 bg-white rounded-full blur-3xl" />
                 </div>
                 <div className="container relative">
                     <div className="max-w-3xl mx-auto text-center">
-                        <span className="inline-block px-4 py-2 bg-white/20 rounded-full text-sm font-semibold mb-6">
+                        <span className="inline-block px-4 py-2 rounded-full text-sm font-semibold mb-6" style={{ backgroundColor: 'rgba(255,255,255,0.15)', color: '#F5DDE1' }}>
                             FOR BUSINESSES
                         </span>
                         <h1
                             className="text-4xl lg:text-5xl font-bold mb-4"
-                            style={{ fontFamily: 'var(--font-display)' }}
+                            style={{ fontFamily: 'var(--font-display)', color: '#F5DDE1' }}
                         >
                             Bulk Orders
                         </h1>
-                        <p className="text-lg text-amber-100">
+                        <p className="text-lg" style={{ color: '#E8C4CA' }}>
                             Special pricing and dedicated support for restaurants, hotels, and catering services.
                         </p>
                     </div>
@@ -294,9 +294,10 @@ export default function BulkOrdersPage() {
                                                 type="button"
                                                 onClick={() => handleProductToggle(product.id)}
                                                 className={`px-4 py-2 rounded-full border-2 font-medium text-sm transition-colors ${formData.productInterests.includes(product.id)
-                                                    ? 'bg-cyan-600 border-cyan-600 text-white'
-                                                    : 'bg-white border-gray-200 text-gray-700 hover:border-cyan-300'
+                                                    ? 'text-white'
+                                                    : 'bg-white border-gray-200 text-gray-700 hover:border-[#570C19]/30'
                                                     }`}
+                                                style={formData.productInterests.includes(product.id) ? { backgroundColor: '#570C19', borderColor: '#570C19', color: '#F5DDE1' } : undefined}
                                             >
                                                 {product.label}
                                             </button>

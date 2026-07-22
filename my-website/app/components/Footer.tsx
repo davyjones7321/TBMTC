@@ -1,9 +1,10 @@
+'use client';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const footerLinks = {
     about: [
         { label: 'Our Story', href: '/our-story' },
-        { label: 'Quality & Sourcing', href: '/quality' },
         { label: 'Certifications', href: '/certifications' },
         { label: 'Sustainability', href: '/sustainability' },
     ],
@@ -64,23 +65,37 @@ const socialLinks = [
 
 export default function Footer() {
     return (
-        <footer className="bg-black text-gray-300">
+        <footer style={{ backgroundColor: '#570C19', color: '#E8C4CA' }}>
             {/* Main Footer Content */}
             <div className="container">
                 <div className="py-16 lg:py-20">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 lg:gap-12">
                         {/* Brand Column */}
                         <div className="lg:col-span-2">
-                            <Link href="/" className="inline-block mb-6">
-                                <span
-                                    className="text-2xl font-bold"
-                                    style={{ fontFamily: 'var(--font-display)' }}
-                                >
-                                    <span className="text-cyan-400">JHOM</span>
-                                    <span className="text-white"> FOODS</span>
-                                </span>
+                            <Link href="/" className="flex items-center gap-3 mb-6 group">
+                                <Image
+                                    src="/images/LOGO.png"
+                                    alt="The Bangalore Meat & Trading Company Logo"
+                                    width={60}
+                                    height={60}
+                                    className="h-14 w-auto object-contain"
+                                />
+                                <div className="flex flex-col justify-center leading-none">
+                                    <span
+                                        className="text-lg font-extrabold tracking-tight"
+                                        style={{ fontFamily: 'var(--font-display)', color: '#F5DDE1' }}
+                                    >
+                                        THE BANGALORE
+                                    </span>
+                                    <span
+                                        className="text-xs font-semibold tracking-wider mt-0.5"
+                                        style={{ color: '#D4A8B0' }}
+                                    >
+                                        MEAT AND TRADING COMPANY
+                                    </span>
+                                </div>
                             </Link>
-                            <p className="text-gray-400 leading-relaxed mb-6 max-w-sm">
+                            <p style={{ color: '#D4A8B0' }} className="leading-relaxed mb-6 max-w-sm">
                                 Premium quality meat and seafood, sustainably sourced and delivered to your doorstep. Experience the difference of farm-to-table quality.
                             </p>
                             <div className="flex items-center gap-3">
@@ -90,7 +105,10 @@ export default function Footer() {
                                         href={social.href}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-cyan-600 hover:text-white transition-all duration-300"
+                                        className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300"
+                                        style={{ backgroundColor: 'rgba(255,255,255,0.1)', color: '#E8C4CA' }}
+                                        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#8B1E32')}
+                                        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)')}
                                         aria-label={social.name}
                                     >
                                         {social.icon}
@@ -101,13 +119,14 @@ export default function Footer() {
 
                         {/* About Links */}
                         <div>
-                            <h4 className="text-white font-semibold mb-5">About</h4>
+                            <h4 style={{ color: '#F5DDE1' }} className="font-semibold mb-5">About</h4>
                             <ul className="space-y-3">
                                 {footerLinks.about.map((link) => (
                                     <li key={link.href}>
                                         <Link
                                             href={link.href}
-                                            className="text-gray-400 hover:text-cyan-400 transition-colors"
+                                            style={{ color: '#D4A8B0' }}
+                                            className="hover:text-white transition-colors"
                                         >
                                             {link.label}
                                         </Link>
@@ -118,13 +137,14 @@ export default function Footer() {
 
                         {/* Shop Links */}
                         <div>
-                            <h4 className="text-white font-semibold mb-5">Shop</h4>
+                            <h4 style={{ color: '#F5DDE1' }} className="font-semibold mb-5">Shop</h4>
                             <ul className="space-y-3">
                                 {footerLinks.shop.map((link) => (
                                     <li key={link.href}>
                                         <Link
                                             href={link.href}
-                                            className="text-gray-400 hover:text-cyan-400 transition-colors"
+                                            style={{ color: '#D4A8B0' }}
+                                            className="hover:text-white transition-colors"
                                         >
                                             {link.label}
                                         </Link>
@@ -135,30 +155,33 @@ export default function Footer() {
 
                         {/* Support Links */}
                         <div>
-                            <h4 className="text-white font-semibold mb-5">Support</h4>
+                            <h4 style={{ color: '#F5DDE1' }} className="font-semibold mb-5">Support</h4>
                             <ul className="space-y-3">
                                 {footerLinks.support.map((link) => (
                                     <li key={link.href}>
                                         <Link
                                             href={link.href}
-                                            className="text-gray-400 hover:text-cyan-400 transition-colors"
+                                            style={{ color: '#D4A8B0' }}
+                                            className="hover:text-white transition-colors"
                                         >
                                             {link.label}
                                         </Link>
                                     </li>
                                 ))}
                             </ul>
-                            <div className="mt-6 pt-6 border-t border-gray-800">
-                                <p className="text-sm text-gray-500 mb-2">Get in touch</p>
+                            <div className="mt-6 pt-6" style={{ borderTop: '1px solid rgba(255,255,255,0.15)' }}>
+                                <p className="text-sm mb-2" style={{ color: '#B8909A' }}>Get in touch</p>
                                 <a
                                     href="tel:8073037379"
-                                    className="block text-white font-medium hover:text-cyan-400 transition-colors"
+                                    className="block font-medium transition-colors"
+                                    style={{ color: '#F5DDE1' }}
                                 >
                                     📞 8073037379
                                 </a>
                                 <a
                                     href="mailto:Jhomfoods24@gmail.com"
-                                    className="block text-gray-400 hover:text-cyan-400 transition-colors text-sm mt-1"
+                                    className="block transition-colors text-sm mt-1"
+                                    style={{ color: '#D4A8B0' }}
                                 >
                                     Jhomfoods24@gmail.com
                                 </a>
@@ -169,14 +192,14 @@ export default function Footer() {
             </div>
 
             {/* Bottom Bar */}
-            <div className="border-t border-gray-800">
+            <div style={{ borderTop: '1px solid rgba(255,255,255,0.15)' }}>
                 <div className="container">
                     <div className="py-6 flex flex-col md:flex-row items-center justify-between gap-4">
-                        <p className="text-sm text-gray-500">
-                            © 2026 JHOM FOODS. All rights reserved. Made with ❤️ in Bangalore
+                        <p className="text-sm" style={{ color: '#B8909A' }}>
+                            © 2026 THE BANGALORE MEAT AND TRADING COMPANY. All rights reserved. Made with ❤️ in Bangalore
                         </p>
                         <div className="flex items-center gap-6">
-                            <div className="flex items-center gap-3 text-gray-600">
+                            <div className="flex items-center gap-3" style={{ color: '#E8C4CA' }}>
                                 {/* Payment Icons */}
                                 <svg className="h-8 w-8" viewBox="0 0 50 50" fill="currentColor">
                                     <rect width="50" height="50" rx="4" fill="#1A1F71" />

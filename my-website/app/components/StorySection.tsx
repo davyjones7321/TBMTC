@@ -54,7 +54,8 @@ export default function StorySection({
                         {cta && (
                             <Link
                                 href={cta.href}
-                                className="inline-flex items-center gap-2 mt-6 text-cyan-600 font-semibold text-lg hover:text-cyan-700 group"
+                                className="inline-flex items-center gap-2 mt-6 font-semibold text-lg hover:underline group"
+                                style={{ color: '#570C19' }}
                             >
                                 {cta.text}
                                 <svg

@@ -1,8 +1,8 @@
 import Link from 'next/link';
 
 export const metadata = {
-    title: 'Privacy Policy - JHOM FOODS',
-    description: 'Learn how JHOM FOODS collects, uses, and protects your personal information.',
+    title: 'Privacy Policy - THE BANGALORE MEAT AND TRADING COMPANY',
+    description: 'Learn how THE BANGALORE MEAT AND TRADING COMPANY collects, uses, and protects your personal information.',
 };
 
 export default function PrivacyPolicyPage() {

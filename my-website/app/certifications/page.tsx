@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
 export const metadata = {
-    title: 'Certifications - JHOM FOODS',
+    title: 'Certifications - THE BANGALORE MEAT AND TRADING COMPANY',
     description: 'Our commitment to the highest standards. View all our certifications and what they mean for you.',
 };
 
@@ -52,23 +52,23 @@ export default function CertificationsPage() {
     return (
         <>
             {/* Hero */}
-            <section className="relative pt-32 pb-24 bg-gradient-to-br from-cyan-800 via-cyan-700 to-cyan-900 text-white overflow-hidden">
+            <section className="relative pt-32 pb-24 text-white overflow-hidden" style={{ backgroundColor: '#570C19' }}>
                 <div className="absolute inset-0 opacity-10">
                     <div className="absolute top-20 right-20 w-96 h-96 bg-white rounded-full blur-3xl" />
                     <div className="absolute bottom-20 left-20 w-80 h-80 bg-white rounded-full blur-3xl" />
                 </div>
                 <div className="container relative">
                     <div className="max-w-3xl mx-auto text-center">
-                        <span className="inline-block px-4 py-2 bg-white/20 rounded-full text-sm font-semibold mb-6">
+                        <span className="inline-block px-4 py-2 rounded-full text-sm font-semibold mb-6" style={{ backgroundColor: 'rgba(255,255,255,0.15)', color: '#F5DDE1' }}>
                             CERTIFICATIONS
                         </span>
                         <h1
                             className="text-4xl lg:text-6xl font-bold mb-6"
-                            style={{ fontFamily: 'var(--font-display)' }}
+                            style={{ fontFamily: 'var(--font-display)', color: '#F5DDE1' }}
                         >
                             Certified Excellence
                         </h1>
-                        <p className="text-lg lg:text-xl" style={{ color: '#000000' }}>
+                        <p className="text-lg lg:text-xl" style={{ color: '#E8C4CA' }}>
                             Our commitment to the highest standards of quality, safety, and sustainability.
                         </p>
                     </div>
@@ -94,9 +94,9 @@ export default function CertificationsPage() {
                         {certifications.map((cert, index) => (
                             <div
                                 key={index}
-                                className="group bg-white border border-gray-100 rounded-2xl p-6 text-center hover:shadow-xl hover:border-cyan-200 transition-all duration-300"
+                                className="group bg-white border border-gray-100 rounded-2xl p-6 text-center hover:shadow-xl hover:border-[#570C19]/20 transition-all duration-300"
                             >
-                                <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-cyan-100 to-cyan-200 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <div className="w-20 h-20 mx-auto mb-4 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform" style={{ backgroundColor: '#FAEFF1' }}>
                                     <span className="text-4xl">{cert.icon}</span>
                                 </div>
                                 <h3 className="font-bold text-gray-900 mb-2">{cert.name}</h3>
@@ -129,7 +129,7 @@ export default function CertificationsPage() {
                                 },
                                 {
                                     title: 'Ethical Sourcing',
-                                    content: 'Our certifications ensure that animals are raised humanely, farmers are paid fairly, and environmental impact is minimized. When you choose JHOM FOODS, you support ethical practices.',
+                                    content: 'Our certifications ensure that animals are raised humanely, farmers are paid fairly, and environmental impact is minimized. When you choose The Bangalore Meat & Trading Company, you support ethical practices.',
                                     icon: '💚',
                                 },
                                 {

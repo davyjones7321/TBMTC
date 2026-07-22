@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useCart } from '@/app/context/CartContext';
 import { useAuth } from '@/app/context/AuthContext';
@@ -10,7 +11,6 @@ const navLinks = [
     { label: 'Home', href: '/' },
     { label: 'Shop', href: '/shop' },
     { label: 'Our Story', href: '/our-story' },
-    { label: 'Quality', href: '/quality' },
     { label: 'Certifications', href: '/certifications' },
     { label: 'Contact', href: '/contact' },
 ];
@@ -24,8 +24,8 @@ export default function Header() {
     const { cartCount, toggleCart } = useCart();
     const { user, isAuthenticated, logout } = useAuth();
 
-    // Use dark theme if scrolled OR if not on homepage
-    const useDarkTheme = isScrolled || pathname !== '/';
+    // Use white background theme when scrolled down on any page
+    const useDarkTheme = isScrolled;
 
     useEffect(() => {
         const handleScroll = () => {
@@ -47,6 +47,11 @@ export default function Header() {
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
+
+    // Close mobile menu on route change
+    useEffect(() => {
+        setIsMobileMenuOpen(false);
+    }, [pathname]);
 
     // Prevent body scroll when mobile menu is open
     useEffect(() => {
@@ -86,18 +91,28 @@ export default function Header() {
             <div className="container">
                 <nav className="flex items-center justify-between h-20">
                     {/* Logo */}
-                    <Link href="/" className="flex items-center gap-2 group">
-                        <div className="relative">
+                    <Link href="/" className="flex items-center gap-3 group">
+                        <div className="relative flex-shrink-0">
+                            <Image
+                                src="/images/LOGO.png"
+                                alt="The Bangalore Meat & Trading Company Logo"
+                                width={54}
+                                height={54}
+                                className="h-12 w-auto object-contain transition-transform group-hover:scale-105"
+                            />
+                        </div>
+                        <div className="flex flex-col justify-center leading-none">
                             <span
-                                className="text-2xl md:text-3xl font-bold tracking-tight"
-                                style={{ fontFamily: 'var(--font-display)' }}
+                                className="text-base md:text-lg font-extrabold tracking-tight transition-colors"
+                                style={{ fontFamily: 'var(--font-display)', color: useDarkTheme ? '#570C19' : '#F5DDE1' }}
                             >
-                                <span className={`transition-colors ${useDarkTheme ? 'text-cyan-600' : 'text-white'}`}>
-                                    JHOM
-                                </span>
-                                <span className={`transition-colors ${useDarkTheme ? 'text-gray-800' : 'text-white'}`}>
-                                    {' '}FOODS
-                                </span>
+                                THE BANGALORE
+                            </span>
+                            <span
+                                className="text-[10px] md:text-xs font-semibold tracking-wider transition-colors mt-0.5"
+                                style={{ color: useDarkTheme ? '#374151' : '#E8C4CA' }}
+                            >
+                                MEAT AND TRADING COMPANY
                             </span>
                         </div>
                     </Link>
@@ -108,13 +123,11 @@ export default function Header() {
                             <Link
                                 key={link.href}
                                 href={link.href}
-                                className={`text-sm font-medium transition-colors relative group ${useDarkTheme
-                                    ? 'text-gray-700 hover:text-cyan-600'
-                                    : 'text-white/90 hover:text-white'
-                                    }`}
+                                className="text-sm font-medium transition-colors relative group"
+                                style={{ color: useDarkTheme ? '#374151' : '#F5DDE1' }}
                             >
                                 {link.label}
-                                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-cyan-500 transition-all duration-300 group-hover:w-full" />
+                                <span className="absolute bottom-0 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full" style={{ backgroundColor: '#570C19' }} />
                             </Link>
                         ))}
                     </div>
@@ -131,7 +144,7 @@ export default function Header() {
                                         : 'hover:bg-white/10'
                                         }`}
                                 >
-                                    <div className="w-8 h-8 rounded-full bg-cyan-600 flex items-center justify-center text-white font-semibold text-sm">
+                                    <div className="w-8 h-8 rounded-full flex items-center justify-center text-white font-semibold text-sm" style={{ backgroundColor: '#570C19' }}>
                                         {getUserInitials()}
                                     </div>
                                     <span className={`hidden md:block text-sm font-medium ${useDarkTheme ? 'text-gray-700' : 'text-white'}`}>
@@ -199,19 +212,18 @@ export default function Header() {
                             <div className="hidden md:flex items-center gap-2">
                                 <Link
                                     href="/login"
-                                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${useDarkTheme
-                                        ? 'text-gray-700 hover:text-cyan-600'
-                                        : 'text-white hover:bg-white/10'
-                                        }`}
+                                    className="px-4 py-2 rounded-full text-sm font-medium transition-colors"
+                                    style={{ color: useDarkTheme ? '#374151' : '#F5DDE1' }}
                                 >
                                     Login
                                 </Link>
                                 <Link
                                     href="/register"
-                                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${useDarkTheme
-                                        ? 'bg-cyan-600 text-white hover:bg-cyan-700'
-                                        : 'bg-white text-gray-900 hover:bg-gray-100'
-                                        }`}
+                                    className="px-4 py-2 rounded-full text-sm font-medium transition-colors"
+                                    style={useDarkTheme
+                                        ? { backgroundColor: '#570C19', color: '#F5DDE1' }
+                                        : { backgroundColor: '#F5DDE1', color: '#570C19' }
+                                    }
                                 >
                                     Sign Up
                                 </Link>
@@ -221,10 +233,8 @@ export default function Header() {
                         {/* Cart Button */}
                         <button
                             onClick={toggleCart}
-                            className={`relative p-2 rounded-full transition-colors ${useDarkTheme
-                                ? 'text-gray-700 hover:bg-gray-100'
-                                : 'text-white hover:bg-white/10'
-                                }`}
+                            className="relative p-2 rounded-full transition-colors"
+                            style={{ color: useDarkTheme ? '#374151' : '#F5DDE1' }}
                             aria-label="Open cart"
                         >
                             <svg
@@ -251,10 +261,11 @@ export default function Header() {
                         {/* Desktop CTA Button */}
                         <Link
                             href="/shop"
-                            className={`hidden lg:inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-semibold text-sm transition-all duration-300 ${useDarkTheme
-                                ? 'bg-cyan-600 text-white hover:bg-cyan-700 shadow-md hover:shadow-lg'
-                                : 'bg-white text-gray-900 hover:bg-gray-100 shadow-lg'
-                                }`}
+                            className="hidden lg:inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-semibold text-sm transition-all duration-300 shadow-md hover:shadow-lg hover:opacity-90"
+                            style={useDarkTheme
+                                ? { backgroundColor: '#570C19', color: '#F5DDE1' }
+                                : { backgroundColor: '#F5DDE1', color: '#570C19' }
+                            }
                         >
                             Shop Now
                             <svg
@@ -311,35 +322,48 @@ export default function Header() {
 
             {/* Mobile Menu */}
             <div
-                className={`lg:hidden fixed inset-0 z-50 transition-all duration-300 ${isMobileMenuOpen ? 'visible' : 'invisible'
+                className={`lg:hidden fixed inset-0 z-50 flex justify-end transition-opacity duration-300 ${isMobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
                     }`}
             >
                 {/* Backdrop */}
                 <div
-                    className={`absolute inset-0 bg-black/50 transition-opacity duration-300 ${isMobileMenuOpen ? 'opacity-100' : 'opacity-0'
-                        }`}
+                    className="absolute inset-0 bg-black/50"
                     onClick={() => setIsMobileMenuOpen(false)}
                 />
 
                 {/* Menu Panel */}
                 <div
-                    className={`absolute top-0 right-0 h-full w-80 max-w-full bg-white shadow-2xl transform transition-transform duration-300 ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
+                    className={`relative w-80 max-w-[85vw] h-full bg-white shadow-2xl flex flex-col z-10 transform transition-transform duration-300 ease-out ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
                         }`}
                 >
-                    <div className="flex flex-col h-full">
+                    <div className="flex flex-col h-full overflow-hidden">
                         {/* Header */}
-                        <div className="flex items-center justify-between p-4 border-b">
-                            <span className="text-xl font-bold" style={{ fontFamily: 'var(--font-display)' }}>
-                                <span className="text-cyan-600">JHOM</span>
-                                <span className="text-gray-800"> FOODS</span>
-                            </span>
+                        <div className="flex items-center justify-between p-4 border-b flex-shrink-0">
+                            <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-2.5">
+                                <Image
+                                    src="/images/LOGO.png"
+                                    alt="The Bangalore Meat & Trading Company Logo"
+                                    width={40}
+                                    height={40}
+                                    className="h-10 w-auto object-contain flex-shrink-0"
+                                />
+                                <div className="flex flex-col justify-center leading-none">
+                                    <span className="text-sm font-extrabold" style={{ fontFamily: 'var(--font-display)', color: '#570C19' }}>
+                                        THE BANGALORE
+                                    </span>
+                                    <span className="text-[9px] font-semibold text-gray-700 tracking-wider mt-0.5">
+                                        MEAT & TRADING CO.
+                                    </span>
+                                </div>
+                            </Link>
                             <button
                                 onClick={() => setIsMobileMenuOpen(false)}
-                                className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                                className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-600"
+                                aria-label="Close menu"
                             >
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
-                                    className="h-6 w-6 text-gray-600"
+                                    className="h-6 w-6"
                                     fill="none"
                                     viewBox="0 0 24 24"
                                     stroke="currentColor"
@@ -356,9 +380,9 @@ export default function Header() {
 
                         {/* User Info (if logged in) */}
                         {isAuthenticated && (
-                            <div className="px-6 py-4 bg-cyan-50 border-b">
+                            <div className="px-6 py-4 border-b flex-shrink-0" style={{ backgroundColor: '#FAEFF1' }}>
                                 <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-full bg-cyan-600 flex items-center justify-center text-white font-semibold">
+                                    <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold" style={{ backgroundColor: '#570C19' }}>
                                         {getUserInitials()}
                                     </div>
                                     <div>
@@ -375,13 +399,12 @@ export default function Header() {
 
                         {/* Navigation Links */}
                         <nav className="flex-1 overflow-y-auto py-4">
-                            {navLinks.map((link, index) => (
+                            {navLinks.map((link) => (
                                 <Link
                                     key={link.href}
                                     href={link.href}
                                     onClick={() => setIsMobileMenuOpen(false)}
-                                    className="block px-6 py-3 text-lg font-medium text-gray-700 hover:bg-gray-50 hover:text-cyan-600 transition-colors"
-                                    style={{ animationDelay: `${index * 50}ms` }}
+                                    className="block px-6 py-3 text-lg font-medium text-gray-700 hover:bg-gray-50 transition-colors"
                                 >
                                     {link.label}
                                 </Link>
@@ -393,14 +416,14 @@ export default function Header() {
                                     <Link
                                         href="/account"
                                         onClick={() => setIsMobileMenuOpen(false)}
-                                        className="block py-3 text-lg font-medium text-gray-700 hover:text-cyan-600 transition-colors"
+                                        className="block py-3 text-lg font-medium text-gray-700 hover:text-gray-900 transition-colors"
                                     >
                                         My Profile
                                     </Link>
                                     <Link
                                         href="/account/orders"
                                         onClick={() => setIsMobileMenuOpen(false)}
-                                        className="block py-3 text-lg font-medium text-gray-700 hover:text-cyan-600 transition-colors"
+                                        className="block py-3 text-lg font-medium text-gray-700 hover:text-gray-900 transition-colors"
                                     >
                                         My Orders
                                     </Link>
@@ -411,14 +434,14 @@ export default function Header() {
                                 <Link
                                     href="/bulk-orders"
                                     onClick={() => setIsMobileMenuOpen(false)}
-                                    className="block py-3 text-lg font-medium text-gray-700 hover:text-cyan-600 transition-colors"
+                                    className="block py-3 text-lg font-medium text-gray-700 hover:text-gray-900 transition-colors"
                                 >
                                     Bulk Orders
                                 </Link>
                                 <Link
                                     href="/sustainability"
                                     onClick={() => setIsMobileMenuOpen(false)}
-                                    className="block py-3 text-lg font-medium text-gray-700 hover:text-cyan-600 transition-colors"
+                                    className="block py-3 text-lg font-medium text-gray-700 hover:text-gray-900 transition-colors"
                                 >
                                     Sustainability
                                 </Link>
@@ -426,7 +449,7 @@ export default function Header() {
                         </nav>
 
                         {/* Footer Actions */}
-                        <div className="p-4 border-t bg-gray-50">
+                        <div className="p-4 border-t bg-gray-50 flex-shrink-0">
                             {isAuthenticated ? (
                                 <button
                                     onClick={() => {
@@ -445,21 +468,22 @@ export default function Header() {
                                     <Link
                                         href="/login"
                                         onClick={() => setIsMobileMenuOpen(false)}
-                                        className="flex items-center justify-center w-full py-3 border border-cyan-600 text-cyan-600 font-semibold rounded-xl hover:bg-cyan-50 transition-colors"
+                                        className="flex items-center justify-center w-full py-3 border border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-gray-100 transition-colors"
                                     >
                                         Login
                                     </Link>
                                     <Link
                                         href="/register"
                                         onClick={() => setIsMobileMenuOpen(false)}
-                                        className="flex items-center justify-center gap-2 w-full py-3 bg-cyan-600 text-white font-semibold rounded-xl hover:bg-cyan-700 transition-colors"
+                                        className="flex items-center justify-center gap-2 w-full py-3 text-white font-semibold rounded-xl hover:opacity-90 transition-colors"
+                                        style={{ backgroundColor: '#570C19', color: '#F5DDE1' }}
                                     >
                                         Create Account
                                     </Link>
                                 </div>
                             )}
                             <div className="flex items-center justify-center gap-4 mt-4 text-sm text-gray-500">
-                                <a href="tel:8073037379" className="hover:text-cyan-600">
+                                <a href="tel:8073037379" className="hover:underline" style={{ color: '#570C19' }}>
                                     📞 8073037379
                                 </a>
                             </div>

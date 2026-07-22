@@ -11,13 +11,13 @@
    CSS Custom Properties
    ==================================== */
 :root {
-  /* Primary Colors - Sky Blue */
-  --color-primary: #19ABFF;
-  --color-primary-dark: #0095E8;
-  --color-primary-darker: #0080CC;
-  --color-primary-light: #4DC0FF;
-  --color-primary-100: #D6F0FF;
-  --color-primary-50: #EBF7FF;
+  /* Primary Colors - Maroon / Brown */
+  --color-primary: #570C19;
+  --color-primary-dark: #3F0812;
+  --color-primary-darker: #2D050C;
+  --color-primary-light: #731222;
+  --color-primary-100: #F5DDE1;
+  --color-primary-50: #FAEFF1;
 
   /* Neutral Colors */
   --color-white: #ffffff;
@@ -152,7 +152,7 @@ body {
   font-size: var(--text-base);
   line-height: 1.6;
   color: var(--text-primary);
-  background-color: var(--bg-primary);
+  background-color: #faf6f1;
   margin: 0;
   padding: 0;
 }

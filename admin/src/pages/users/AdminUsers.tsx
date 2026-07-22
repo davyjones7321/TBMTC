@@ -36,25 +36,21 @@ const AdminUsers: React.FC = () => {
     }, [page, search, roleFilter]);
 
     const fetchUsers = async () => {
-        console.log('🔍 Fetching users...');
         setIsLoading(true);
         try {
             const params: any = { page, limit: 10 };
             if (search) params.search = search;
             if (roleFilter) params.role = roleFilter;
 
-            console.log('📤 API Request params:', params);
             const response = await usersApi.getAll(params);
-            console.log('📥 API Response:', response);
 
             if (response.success && response.data) {
                 setUsers(response.data.data || []);
                 setStats(response.data.stats);
                 setTotalPages(response.data.pagination?.totalPages || 1);
-                console.log('✅ Users loaded:', response.data.data?.length || 0);
             }
         } catch (error) {
-            console.error('❌ Failed to fetch users:', error);
+            console.error('Failed to fetch users:', error);
         } finally {
             setIsLoading(false);
         }
@@ -117,19 +113,8 @@ const AdminUsers: React.FC = () => {
         }
     };
 
-    console.log('🎨 AdminUsers component rendering...', { isSuperAdmin, usersCount: users.length, isLoading });
-
     return (
         <div className="space-y-6">
-            {/* Debug Header - Remove this after testing */}
-            <div className="bg-yellow-100 border border-yellow-400 p-4 rounded">
-                <p className="font-bold">Debug Info:</p>
-                <p>Component Loaded: ✅</p>
-                <p>Is Super Admin: {isSuperAdmin ? '✅' : '❌'}</p>
-                <p>Current User Email: {currentUser?.email || 'Not logged in'}</p>
-                <p>Users Count: {users.length}</p>
-                <p>Is Loading: {isLoading ? 'Yes' : 'No'}</p>
-            </div>
 
             {/* Header */}
             <div className="flex justify-between items-center">

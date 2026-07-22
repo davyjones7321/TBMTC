@@ -143,7 +143,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                     {/* Badges */}
                     <div className="absolute top-3 left-3 flex flex-col gap-2 z-10">
                         {showNewBadge && (
-                            <span className="px-3 py-1 bg-cyan-500 text-white text-xs font-bold rounded-full shadow-md">
+                            <span className="px-3 py-1 text-white text-xs font-bold rounded-full shadow-md" style={{ backgroundColor: '#570C19' }}>
                                 NEW
                             </span>
                         )}
@@ -173,7 +173,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             {/* Content */}
             <div className="p-4">
                 <Link href={`/product/${productId}`}>
-                    <h3 className="font-semibold text-gray-900 mb-1 group-hover:text-cyan-600 transition-colors line-clamp-1">
+                    <h3 className="font-semibold text-gray-900 mb-1 hover:text-[#570C19] transition-colors line-clamp-1">
                         {product.name}
                     </h3>
                 </Link>
@@ -190,9 +190,10 @@ export default function ProductCard({ product }: ProductCardProps) {
                                 key={variant.size}
                                 onClick={() => setSelectedVariant(variant.size)}
                                 className={`px-2 py-1 text-xs rounded border transition-colors ${selectedVariant === variant.size
-                                    ? 'bg-cyan-600 text-white border-cyan-600'
-                                    : 'bg-white text-gray-600 border-gray-200 hover:border-cyan-600'
+                                    ? 'text-white'
+                                    : 'bg-white text-gray-600 border-gray-200 hover:border-[#570C19]'
                                     }`}
+                                style={selectedVariant === variant.size ? { backgroundColor: '#570C19', borderColor: '#570C19', color: '#F5DDE1' } : undefined}
                             >
                                 {variant.size}
                             </button>
@@ -216,9 +217,10 @@ export default function ProductCard({ product }: ProductCardProps) {
                         onClick={handleAddToCart}
                         disabled={!isInStock}
                         className={`p-2.5 rounded-full transition-all duration-300 ${isInStock
-                            ? 'bg-cyan-100 text-cyan-600 hover:bg-cyan-600 hover:text-white hover:scale-110 hover:shadow-lg'
+                            ? 'hover:scale-110 hover:shadow-lg'
                             : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                             }`}
+                        style={isInStock ? { backgroundColor: '#FAEFF1', color: '#570C19' } : undefined}
                         aria-label="Add to cart"
                     >
                         <svg

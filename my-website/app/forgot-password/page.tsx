@@ -35,13 +35,21 @@ export default function ForgotPasswordPage() {
             <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4">
                 <div className="max-w-md w-full">
                     <div className="text-center mb-8">
-                        <Link href="/" className="inline-block">
-                            <h1
-                                className="text-3xl font-bold text-cyan-600"
+                        <Link href="/" className="inline-flex items-center gap-3">
+                            <img
+                                src="/images/LOGO.png"
+                                alt="The Bangalore Meat & Trading Company Logo"
+                                className="h-12 w-auto object-contain"
+                            />
+                            <span
+                                className="text-lg font-extrabold text-[#570C19] text-left leading-tight"
                                 style={{ fontFamily: 'var(--font-display)' }}
                             >
-                                JHOM FOODS
-                            </h1>
+                                THE BANGALORE
+                                <span className="block text-xs font-semibold text-gray-700 tracking-wider">
+                                    MEAT & TRADING CO.
+                                </span>
+                            </span>
                         </Link>
                     </div>
 
@@ -69,13 +77,21 @@ export default function ForgotPasswordPage() {
             <div className="max-w-md w-full">
                 {/* Header */}
                 <div className="text-center mb-8">
-                    <Link href="/" className="inline-block">
-                        <h1
-                            className="text-3xl font-bold text-cyan-600"
+                    <Link href="/" className="inline-flex items-center gap-3">
+                        <img
+                            src="/images/LOGO.png"
+                            alt="The Bangalore Meat & Trading Company Logo"
+                            className="h-12 w-auto object-contain"
+                        />
+                        <span
+                            className="text-lg font-extrabold text-[#570C19] text-left leading-tight"
                             style={{ fontFamily: 'var(--font-display)' }}
                         >
-                            JHOM FOODS
-                        </h1>
+                            THE BANGALORE
+                            <span className="block text-xs font-semibold text-gray-700 tracking-wider">
+                                MEAT & TRADING CO.
+                            </span>
+                        </span>
                     </Link>
                     <h2 className="mt-6 text-2xl font-bold text-gray-900">
                         Forgot your password?

@@ -45,11 +45,11 @@ export default function Hero({
                         style={{ backgroundImage: `url(${backgroundImage})` }}
                     />
                 ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-cyan-800 via-cyan-700 to-cyan-900">
+                    <div className="w-full h-full" style={{ background: 'linear-gradient(to bottom right, #570C19, #6B1022, #3D0812)' }}>
                         {/* Decorative Elements */}
-                        <div className="absolute top-20 right-20 w-96 h-96 bg-cyan-600/30 rounded-full blur-3xl" />
-                        <div className="absolute bottom-20 left-20 w-80 h-80 bg-cyan-500/20 rounded-full blur-3xl" />
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-cyan-400/10 rounded-full blur-3xl" />
+                        <div className="absolute top-20 right-20 w-96 h-96 rounded-full blur-3xl" style={{ backgroundColor: 'rgba(87, 12, 25, 0.5)' }} />
+                        <div className="absolute bottom-20 left-20 w-80 h-80 rounded-full blur-3xl" style={{ backgroundColor: 'rgba(107, 16, 34, 0.4)' }} />
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-3xl" style={{ backgroundColor: 'rgba(139, 30, 50, 0.2)' }} />
                     </div>
                 )}
 
@@ -71,14 +71,14 @@ export default function Hero({
                         } animate-fade-in-up`}
                 >
                     <h1
-                        className="text-4xl md:text-5xl lg:text-7xl font-bold text-white mb-6 leading-tight"
-                        style={{ fontFamily: 'var(--font-display)' }}
+                        className="text-4xl md:text-5xl lg:text-7xl font-bold mb-6 leading-tight"
+                        style={{ fontFamily: 'var(--font-display)', color: '#F5DDE1' }}
                     >
                         {title}
                     </h1>
 
                     {subtitle && (
-                        <p className="text-lg md:text-xl lg:text-2xl mb-8 leading-relaxed max-w-2xl" style={{ color: '#000000' }}>
+                        <p className="text-lg md:text-xl lg:text-2xl mb-8 leading-relaxed max-w-2xl" style={{ color: '#E8C4CA' }}>
                             {subtitle}
                         </p>
                     )}
@@ -124,7 +124,7 @@ export default function Hero({
             </div>
 
             {/* Bottom Gradient Fade */}
-            <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white to-transparent" />
+            <div className="absolute bottom-0 left-0 right-0 h-32" style={{ background: 'linear-gradient(to top, #faf6f1, transparent)' }} />
         </section>
     );
 }
